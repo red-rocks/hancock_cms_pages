@@ -1,0 +1,54 @@
+ru:
+  admin:
+    actions:
+      toggle_menu:
+        menu:       Переключатель меню
+        breadcrumb: Переключатель меню
+        title:      Переключатель меню
+
+  hancock:
+    pages: 'Страницы и меню'
+    menu_title: Меню
+    menu:
+      enabled: 'добавлено в меню "%{menu}"'
+      disabled: 'удалено из меню "%{menu}"'
+      error: "Ошибка: %{err}"
+      no_id: "Не указан ID"
+
+  mongoid: &mongoid
+    models:
+      hancock/pages/menu: Меню
+      hancock/pages/page: Страница
+      hancock/pages/block: Блок
+      hancock/pages/blockset: Блоки
+    attributes:
+      hancock/pages/page:
+        fullpath: URL
+        regexp: Подсветка меню
+        redirect: Редирект
+        menus: Меню
+        connectable: Связанный элемент
+        connectable_type: Связанный элемент
+        connectable_id: Связанный элемент
+      hancock/pages/blockset:
+        blocks: Блоки
+        use_wrapper: Завернуть во враппер?
+        wrapper_tag: Тэг враппера
+        wrapper_class: class-атрибут враппера
+        wrapper_id: id-атрибут враппера
+        wrapper_attributes: Прочие атрибуты враппера
+      hancock/pages/block:
+        partial: "Файл-partial"
+        file_path: "Путь к файлу"
+        show_in_menu: Показывать в меню
+        partial: Как partial?
+        menu_link_content: HTML ссылки в меню
+        pageblock_selector: CSS-селектор блока на странице
+        use_wrapper: Завернуть во враппер?
+        wrapper_tag: Тэг враппера
+        wrapper_class: class-атрибут враппера
+        wrapper_id: id-атрибут враппера
+        wrapper_attributes: Прочие атрибуты враппера
+
+  activerecord:
+    <<: *mongoid
