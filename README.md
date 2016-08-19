@@ -22,7 +22,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Localization
+
+Add to application_controller.rb:
+
+```ruby
+class ApplicationController < ActionController::Base
+  include Hancock::Controller
+  include Hancock::Pages::Localizeable
+end
 
 ## Development
 
