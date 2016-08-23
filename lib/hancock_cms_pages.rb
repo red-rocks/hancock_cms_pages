@@ -16,25 +16,7 @@ require 'hancock/pages/rails_admin_ext/menu'
 require 'simple-navigation'
 
 module Hancock::Pages
-  # Hancock::register_plugin(self)
-
-  class << self
-    def orm
-      Hancock.orm
-    end
-    def mongoid?
-      Hancock::Pages.orm == :mongoid
-    end
-    def active_record?
-      Hancock::Pages.orm == :active_record
-    end
-    def model_namespace
-      "Hancock::Pages::Models::#{Hancock::Pages.orm.to_s.camelize}"
-    end
-    def orm_specific(name)
-      "#{model_namespace}::#{name}".constantize
-    end
-  end
+  include Hancock::Plugin
 
   autoload :Admin, 'hancock/pages/admin'
   module Admin
