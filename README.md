@@ -1,8 +1,8 @@
 # HancockCmsPages
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hancock_pages`. To experiment with that code, run `bin/console` for an interactive prompt.
+### Remaded from [EnjoyCMSPages](https://github.com/enjoycreative/enjoy_cms_pages)
 
-TODO: Delete this and the text above, and describe your gem
+Menu([Simple Navigation](https://github.com/codeplant/simple-navigation)), pages and html blocks for [HancockCMS](https://github.com/red-rocks/hancock_cms).
 
 ## Installation
 
@@ -22,6 +22,40 @@ Or install it yourself as:
 
 ## Usage
 
+Add in config/routes.rb
+
+```ruby
+  hancock_cms_pages_routes
+```
+
+Recommendation: add this line at the end fo routes.rb.
+This method has route
+```ruby
+get '*slug'
+```
+so all requests will go here.
+[More](https://github.com/red-rocks/hancock_cms_pages/blob/master/lib/hancock/pages/routes.rb)
+
+Then execute
+
+    $ rails g hancock:goto:config
+
+and now you can edit config/initializers/hancock_pages.rb
+
+### Views
+Render navigation for blockset with name 'main':
+```ruby
+render_navigation &blockset_navigation(:main)
+```
+Render blockset(set of blocks which can have html code, partials of files) with name 'main':
+```ruby
+render_blockset(self, :main)
+```
+Render navigation menu with name 'main':
+```ruby
+render_navigation &navigation(:main)
+[More](https://github.com/red-rocks/hancock_cms_pages/tree/master/app/controllers/concerns/hancock/pages)
+
 ### Localization
 
 Add to application_controller.rb:
@@ -31,6 +65,7 @@ class ApplicationController < ActionController::Base
   include Hancock::Controller
   include Hancock::Pages::Localizeable
 end
+```
 
 ## Development
 
