@@ -47,7 +47,7 @@ Render navigation for blockset with name 'main':
 ```ruby
 render_navigation &blockset_navigation(:main)
 ```
-Render blockset(set of blocks which can have html code, partials of files) with name 'main':
+Render blockset(set of blocks which can have html code, partials or files) with name 'main':
 ```ruby
 render_blockset(self, :main)
 ```
