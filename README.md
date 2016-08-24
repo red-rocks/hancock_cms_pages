@@ -54,6 +54,7 @@ render_blockset(self, :main)
 Render navigation menu with name 'main':
 ```ruby
 render_navigation &navigation(:main)
+```
 [More](https://github.com/red-rocks/hancock_cms_pages/tree/master/app/controllers/concerns/hancock/pages)
 
 ### Localization
