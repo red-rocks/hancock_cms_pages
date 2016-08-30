@@ -10,6 +10,14 @@ module Hancock::Pages
 
       included do
         manual_slug :name
+
+
+        def self.manager_can_add_actions
+          [:sort_embedded]
+        end
+        def self.rails_admin_add_visible_actions
+          [:sort_embedded]
+        end
       end
 
 
@@ -43,10 +51,6 @@ module Hancock::Pages
         end
       end
 
-
-      def self.manager_default_actions
-        super + [:sort_embedded]
-      end
 
     end
   end
