@@ -3,8 +3,8 @@ module Hancock::Pages::Localizeable
   included do
     before_filter do
       I18n.locale = params[:locale] || I18n.default_locale
-      Settings.ns_default = "main_#{I18n.locale}"
-      Settings.ns_fallback = "main"
+      Settings.ns_default = "main_#{I18n.locale}".freeze
+      Settings.ns_fallback = "main".freeze
     end
   end
   private

@@ -14,7 +14,7 @@ module Hancock::Pages
         validates :file_path, format: {
           # with: /\A(?!layouts\/).*\Z/,
           without: /\Alayouts\/.*\Z/,
-          message: "Недопустимый путь к файлу"
+          message: "Недопустимый путь к файлу".freeze
         }
 
         attr_accessor :file_pathname

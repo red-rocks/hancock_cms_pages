@@ -4,7 +4,7 @@ module Hancock::Pages
   def self.config_class
     Configuration
   end
-  
+
   class Configuration
     attr_accessor :menu_max_depth
 
@@ -14,6 +14,10 @@ module Hancock::Pages
 
     attr_accessor :breadcrumbs_on_rails_support
 
+    attr_accessor :model_settings_support
+    attr_accessor :user_abilities_support
+    attr_accessor :ra_comments_support
+
     def initialize
       @menu_max_depth = 2
 
@@ -22,6 +26,10 @@ module Hancock::Pages
       @localize   = Hancock.config.localize
 
       @breadcrumbs_on_rails_support = defined?(BreadcrumbsOnRails)
+
+      @model_settings_support = defined?(RailsAdminModelSettings)
+      @user_abilities_support = defined?(RailsAdminUserAbilities)
+      @ra_comments_support = defined?(RailsAdminComments)
     end
   end
 end
