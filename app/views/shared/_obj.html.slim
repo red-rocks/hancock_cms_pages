@@ -14,8 +14,7 @@
     .admin_button
       = render 'shared/admin_link', obj: obj
     - if !@seo_page.nil? && (@seo_page.id != obj.id || @seo_page.class.name != obj.class.name)
-      .admin_button
-        = render 'shared/admin_link', obj: @seo_page
+      = render 'shared/admin_link', obj: @seo_page
 
   - content_for :meta do
     - if obj.respond_to?(:seo) 
