@@ -7,7 +7,7 @@ module Hancock::Pages
         include Hancock::HtmlField
 
         included do
-          field :name, type: String, default: ""
+          field :name, type: String, default: "", overwrite: true
 
           field :pageblock_selector, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :file_path, type: String, localize: Hancock::Pages.config.localize, default: ""

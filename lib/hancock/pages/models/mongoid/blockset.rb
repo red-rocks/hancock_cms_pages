@@ -5,7 +5,7 @@ module Hancock::Pages
         extend ActiveSupport::Concern
 
         included do
-          field :name, type: String, default: ""
+          field :name, type: String, default: "", overwrite: true
 
           embeds_many :blocks, inverse_of: :blockset, class_name: "Hancock::Pages::Block"
           accepts_nested_attributes_for :blocks, allow_destroy: true
