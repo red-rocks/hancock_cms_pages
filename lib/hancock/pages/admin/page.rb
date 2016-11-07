@@ -75,7 +75,7 @@ module Hancock::Pages
 
             Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)
 
-            group :seo_n_sitemap, &Hancock::Admin.seo_n_sitemap_block
+            group :seo_n_sitemap, &Hancock::Seo::Admin.seo_n_sitemap_block
             # group :seo do
             #   active false
             #   field :seo
