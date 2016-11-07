@@ -26,7 +26,12 @@ module Hancock::Pages
           self.fullpath = "/pages/#{slug}" if self.fullpath.blank?
         end
 
-        belongs_to :connectable, polymorphic: true
+
+        if Hancock.rails4?
+          belongs_to :connectable, polymorphic: true
+        else
+          belongs_to :connectable, polymorphic: true, optional: true
+        end
 
         def self.goto_hancock
           self.where(connectable_type: /^Enjoy/).all.map { |s|
@@ -80,8 +85,9 @@ module Hancock::Pages
           if content.nil?
             ''
           else
-            content.gsub(/\{\{(.*?)\}\}/) do
-              Settings ? Settings.get($1).val : "" #temp
+            # content.gsub(/\{\{(.*?)\}\}/) do
+            content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+              Settings ? Settings.ns($2).get($3).val : "" #temp
             end
           end
         else

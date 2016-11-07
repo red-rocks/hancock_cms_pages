@@ -5,9 +5,8 @@ module Hancock::Pages::CanonicalHelper
   end
 
   def hancock_canonical_tag_for(obj)
-    return if obj.use_hancock_canonicalable
-    url = obj.hancock_canonicalable_url
-    url = url_for(obj.hancock_canonicalable) if !url.blank? and obj.hancock_canonicalable
-    hancock_canonical_tag(url) if url.blank?
+    return unless obj.use_hancock_canonicalable
+    url = obj.hancock_canonical_url
+    hancock_canonical_tag(url) unless url.blank?
   end
 end

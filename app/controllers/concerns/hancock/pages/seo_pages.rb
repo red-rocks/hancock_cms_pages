@@ -72,6 +72,16 @@ module Hancock::Pages::SeoPages
     page
 
   end
+  
+
+  def page_title
+    if @seo_page.nil?
+      Settings ? Settings.default_title : "" #temp
+    else
+      @seo_page.page_title
+    end
+  end
+
 
   def find_seo_extra(path)
     nil

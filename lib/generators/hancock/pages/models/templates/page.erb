@@ -1,0 +1,43 @@
+class <%= camelcased_class_name %> < Hancock::Pages::Page
+
+  # has_and_belongs_to_many :menus, inverse_of: :pages, class_name: "Hancock::Pages::Menu"
+
+  # if Hancock.rails4?
+  #   belongs_to :connectable, polymorphic: true, overwrite: true
+  # else
+  #   belongs_to :connectable, polymorphic: true, overwrite: true, optional: true
+  # end
+
+  # def nav_options_additions
+  #   {}
+  # end
+
+  ############ rails_admin ##############
+  def self.rails_admin_add_fields
+    [] #super
+  end
+
+  def self.rails_admin_add_config(config)
+    #super(config)
+  end
+
+  def admin_can_user_defined_actions
+    [].freeze
+  end
+  def admin_cannot_user_defined_actions
+    [].freeze
+  end
+  def manager_can_user_defined_actions
+    [].freeze
+  end
+  def manager_cannot_user_defined_actions
+    [].freeze
+  end
+  def rails_admin_user_defined_visible_actions
+    [].freeze
+  end
+
+  rails_admin(&Hancock::Pages::Admin::Page.config(rails_admin_add_fields) { |config|
+    rails_admin_add_config(config)
+  })
+end

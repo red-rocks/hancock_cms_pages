@@ -6,17 +6,16 @@ module Hancock::Pages
       include Hancock::Enableable
       include ManualSlug
 
+      include Hancock::Cacheable
+
       include Hancock::Pages.orm_specific('Menu')
 
       included do
-        manual_slug :name
+        def self.default_cache_keys
+          ['menus']
+        end
 
-        after_save do
-          Rails.cache.delete 'menus'
-        end
-        after_destroy do
-          Rails.cache.delete 'menus'
-        end
+        manual_slug :name
 
         def self.manager_can_add_actions
           ret = []
@@ -34,7 +33,16 @@ module Hancock::Pages
           ret += [:comments, :model_comments] if Hancock::Pages.config.ra_comments_support
           ret.freeze
         end
+
+        def self.page_class
+          Hancock::Pages::Page
+        end
+
+        def page_class
+          self.class.page_class
+        end
       end
+
     end
   end
 end

@@ -1,9 +1,12 @@
 module Hancock::Pages
   module Admin
     module Block
-      def self.config(fields = {})
+      def self.config(nav_label = nil, fields = {})
+        if nav_label.is_a?(Hash)
+          nav_label, fields = nav_label[:nav_label], nav_label
+        end
         Proc.new {
-          navigation_label I18n.t('hancock.pages')
+          navigation_label(!nav_label.blank? ? nav_label : I18n.t('hancock.pages'))
 
           field :enabled, :toggle do
             searchable false
@@ -31,18 +34,19 @@ module Hancock::Pages
             searchable true
           end
 
-          group :wrapper do
-            active false
-            field :use_wrapper, :toggle
-            field :wrapper_tag, :string
-            field :wrapper_class, :string
-            field :wrapper_id, :string
-            field :wrapper_attributes, :text do
-              formatted_value do
-                bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
-              end
-            end
-          end
+          group :wrapper, &Hancock::Pages::Admin.wrapper_block
+          # group :wrapper do
+          #   active false
+          #   field :use_wrapper, :toggle
+          #   field :wrapper_tag, :string
+          #   field :wrapper_class, :string
+          #   field :wrapper_id, :string
+          #   field :wrapper_attributes, :text do
+          #     formatted_value do
+          #       bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
+          #     end
+          #   end
+          # end
 
           # field :content_html, :ck_editor
           # field :content_clear, :toggle

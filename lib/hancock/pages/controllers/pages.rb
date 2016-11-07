@@ -2,6 +2,7 @@ module Hancock::Pages
   module Controllers
     module Pages
       extend ActiveSupport::Concern
+
       def show
         if @seo_page.nil? || !@seo_page.persisted?
           if !params[:id].blank? or !params[:slug].blank?
@@ -26,6 +27,7 @@ module Hancock::Pages
 
       def after_initialize
       end
+      
     end
   end
 end

@@ -108,6 +108,7 @@ module Hancock::Pages
           self[:wrapper_attributes] = wrapper_attributes
         end
       end
+      
     end
   end
 end

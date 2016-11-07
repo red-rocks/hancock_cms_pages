@@ -123,9 +123,9 @@ module RailsAdmin
               end
             else
               if params['ajax'].present?
-                render text: I18n.t('rs.m.no_id'), status: 422
+                render text: I18n.t('hancock.menu.no_id'), status: 422
               else
-                flash[:error] = I18n.t('rs.m.no_id')
+                flash[:error] = I18n.t('hancock.menu.no_id')
               end
 
             end

@@ -1,0 +1,37 @@
+class <%= camelcased_class_name %> < Hancock::Pages::Menu
+
+  # has_and_belongs_to_many :pages, inverse_of: :menus, class_name: "Hancock::Pages::Page"
+
+  def self.default_cache_keys
+    ['menus']
+  end
+
+  ############ rails_admin ##############
+  def self.rails_admin_add_fields
+    [] #super
+  end
+
+  def self.rails_admin_add_config(config)
+    #super(config)
+  end
+
+  def admin_can_user_defined_actions
+    [].freeze
+  end
+  def admin_cannot_user_defined_actions
+    [].freeze
+  end
+  def manager_can_user_defined_actions
+    [].freeze
+  end
+  def manager_cannot_user_defined_actions
+    [].freeze
+  end
+  def rails_admin_user_defined_visible_actions
+    [].freeze
+  end
+
+  rails_admin(&Hancock::Pages::Admin::Menu.config(rails_admin_add_fields) { |config|
+    rails_admin_add_config(config)
+  })
+end
