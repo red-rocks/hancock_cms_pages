@@ -1,5 +1,5 @@
 module Hancock::Pages::Decorators
-  module PagesController
+  module Pages
     extend ActiveSupport::Concern
 
     # included do
