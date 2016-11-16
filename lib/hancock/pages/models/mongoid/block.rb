@@ -12,6 +12,7 @@ module Hancock::Pages
           field :pageblock_selector, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :file_path, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :partial, type: Boolean, default: true
+          field :render_file, type: Boolean, default: true
           embedded_in :blockset, inverse_of: :blocks, class_name: "Hancock::Pages::Blockset"
 
           hancock_cms_html_field :content, type: String, localize: Hancock::Pages.config.localize, default: ""

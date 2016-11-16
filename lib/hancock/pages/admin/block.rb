@@ -16,6 +16,9 @@ module Hancock::Pages
           field :show_in_menu, :toggle do
             searchable false
           end
+          field :render_file, :toggle do
+            searchable false
+          end
           field :partial, :toggle do
             searchable false
           end

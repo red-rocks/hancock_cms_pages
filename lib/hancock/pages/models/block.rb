@@ -26,18 +26,82 @@ module Hancock::Pages
       def file_pathname_as_partial
         self.file_pathname.dirname.join("_#{self.file_pathname.basename}")
       end
+      def file_path_as_partial
+        self.file_pathname_as_partial.to_s
+      end
 
       def file_pathname_for_fs
-        self.partial ? self.file_path_as_partial : self.file_pathname
+        self.partial ? self.file_pathname_as_partial : self.file_pathname
+      end
+      def file_path_for_fs
+        self.file_pathname_for_fs.to_s
+      end
+
+
+      def has_content?
+        @content_used.nil? && !content.blank?
+      end
+      def block_content(clear_insertions = true)
+        if clear_insertions.is_a?(Hash)
+          clear_insertions = clear_insertions[:clear_insertions]
+        end
+        if @content_used.nil?
+          @content_used = true
+          if content.nil?
+            ''
+          else
+            # content.gsub(/\{\{(.*?)\}\}/) do
+            content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+              if $3 == "FILE" and $2.blank?
+                clear_insertions ? "" : $0
+              else
+                (Settings and !$3.blank?) ? Settings.ns($2).get($3).val : "" #temp
+              end
+            end
+          end
+        else
+          ''
+        end
+      end
+      def has_content_html?
+        @content_html_used.nil? && !content_html.blank?
+      end
+      def block_content_html(clear_insertions = true)
+        if clear_insertions.is_a?(Hash)
+          clear_insertions = clear_insertions[:clear_insertions]
+        end
+        if @content_html_used.nil?
+          @content_html_used = true
+          if content_html.nil?
+            ''
+          else
+            # content.gsub(/\{\{(.*?)\}\}/) do
+            content_html.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+              if $3 == "FILE" and $2.blank?
+                clear_insertions ? "" : $0
+              else
+                (Settings and !$3.blank?) ? Settings.ns($2).get($3).val : "" #temp
+              end
+            end
+          end
+        else
+          ''
+        end
       end
 
       def render_or_content_html(view, opts = {})
+        if view.is_a?(Hash)
+          view, opts = view.delete(:view), view
+        end
         ret = ""
-        unless self.file_path.blank?
-          opts.merge!(partial: self.file_path)
+        if self.render_file and !self.file_path.blank?
+          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :render})
           ret = view.render(opts) rescue self.content_html.html_safe
         else
-          ret = self.content_html.html_safe
+          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :content_html})
+          ret = self.block_content_html(false).gsub("{{FILE}}") do
+            view.render(opts) rescue nil
+          end.html_safe
         end
         if use_wrapper
           _attrs = {
@@ -51,25 +115,37 @@ module Hancock::Pages
       end
 
       def render_or_content(view, opts = {})
+        if view.is_a?(Hash)
+          view, opts = view.delete(:view), view
+        end
         ret = ""
         unless self.file_path.blank?
-          opts.merge!(partial: self.file_path)
+          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :render})
           ret = view.render(opts) rescue self.content
         else
-          ret = self.content
+          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :content})
+          ret = self.block_content(false).gsub("{{FILE}}") do
+            view.render(opts) rescue nil
+          end
         end
         ret = yield ret if block_given?
         return ret
       end
 
       def file_fullpath(with_ext = false, ext = ".html.slim")
+        if with_ext.is_a?(String)
+          ext, with_ext = with_ext, true
+        end
         ret = nil
         unless self.file_path.blank?
-          res_filename = self.file_pathname_for_fs.to_s
-          res_filename += ext if with_ext
-          ret = Rails.root.join("views", res_filename)
+          ret = self.file_path_for_fs
+          ret += ext if with_ext
+          ret = Rails.root.join("views", ret)
         end
         return ret
+      end
+      def file_exists?
+        file_fullpath(true).exist?
       end
 
       def nav_options
@@ -108,7 +184,7 @@ module Hancock::Pages
           self[:wrapper_attributes] = wrapper_attributes
         end
       end
-      
+
     end
   end
 end

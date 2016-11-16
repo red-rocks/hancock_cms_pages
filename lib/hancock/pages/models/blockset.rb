@@ -31,6 +31,9 @@ module Hancock::Pages
 
 
       def render(view, content = "")
+        if view.is_a?(Hash)
+          view, content = view[:view], view[:content]
+        end
         ret = content
         if use_wrapper
           _attrs = {

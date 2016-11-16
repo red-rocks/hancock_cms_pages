@@ -75,6 +75,28 @@ module Hancock::Pages
         redirect.blank? ? fullpath : redirect
       end
 
+
+      def has_excerpt?
+        @excerpt_used.nil? && !excerpt.blank?
+      end
+
+      def page_excerpt
+        if @excerpt_used.nil?
+          @excerpt_used = true
+          if excerpt.nil?
+            ''
+          else
+            # excerpt.gsub(/\{\{(.*?)\}\}/) do
+            excerpt.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+              (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
+            end
+          end
+        else
+          ''
+        end
+      end
+
+
       def has_content?
         @content_used.nil? && !content.blank?
       end
@@ -87,7 +109,7 @@ module Hancock::Pages
           else
             # content.gsub(/\{\{(.*?)\}\}/) do
             content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-              Settings ? Settings.ns($2).get($3).val : "" #temp
+              (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
             end
           end
         else
