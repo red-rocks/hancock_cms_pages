@@ -12,7 +12,7 @@ module RailsAdmin
           register_instance_option :pretty_value do
             obj = bindings[:object]
             ret = []
-            menus = Rails.cache.fetch 'menus', expires_in: 10.minutes do
+            menus = Rails.cache.fetch 'menus' do
               if Hancock.mongoid?
                 ::Hancock::Pages::Menu.all.map { |m| {id: m.id.to_s, name: m.name } }
               else
