@@ -15,6 +15,10 @@ module Hancock::Pages
           field :render_file, type: Boolean, default: true
           embedded_in :blockset, inverse_of: :blocks, class_name: "Hancock::Pages::Blockset"
 
+          def self.find(id)
+            find_through(Hancock::Pages::Blockset, 'blocks', id)
+          end
+
           hancock_cms_html_field :content, type: String, localize: Hancock::Pages.config.localize, default: ""
 
           field :use_wrapper, type: Boolean, default: false

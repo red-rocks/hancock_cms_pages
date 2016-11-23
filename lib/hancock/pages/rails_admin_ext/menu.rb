@@ -109,21 +109,21 @@ module RailsAdmin
                   end
                 else
                   if params['ajax'].present?
-                    render text: @object.errors.full_messages.join(', '), layout: false, status: 422
+                    render plain: @object.errors.full_messages.join(', '), layout: false, status: 422
                   else
                     flash[:error] = @object.errors.full_messages.join(', ')
                   end
                 end
               rescue Exception => e
                 if params['ajax'].present?
-                  render text: I18n.t('hancock.menu.error', err: e.to_s), status: 422
+                  render plain: I18n.t('hancock.menu.error', err: e.to_s), status: 422
                 else
                   flash[:error] = I18n.t('hancock.menu.error', err: e.to_s)
                 end
               end
             else
               if params['ajax'].present?
-                render text: I18n.t('hancock.menu.no_id'), status: 422
+                render plain: I18n.t('hancock.menu.no_id'), status: 422
               else
                 flash[:error] = I18n.t('hancock.menu.no_id')
               end
