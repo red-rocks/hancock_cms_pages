@@ -35,7 +35,7 @@ module Hancock::Pages::SeoPages
     if page.nil?
       do_redirect = true
       spath = path.chomp(File.extname(path))
-      if spath != path and spath != "/" + params[:slug]
+      if spath and spath != path and (!params[:slug].blank? and spath != "/" + params[:slug])
         page = page_class.enabled.where(fullpath: spath).first
       end
     end
