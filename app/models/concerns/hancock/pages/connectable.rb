@@ -25,7 +25,7 @@ module Hancock::Pages::Connectable
             if [true, 1, "1", "true", "t"].include?(self.hancock_connectable_autocreate_page)
               _p = #{class_name}.new
               _p.#{_name_attr} = self.#{_name_attr}
-              _p.connectable = self
+              _p.hancock_connectable = self
               _p.save
             end
           end

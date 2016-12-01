@@ -21,7 +21,7 @@ module Hancock::Pages::Localizeable
     pages.sorted.to_a
   end
   def nav_get_url(item)
-    _connectable = item.connectable
+    _connectable = item.hancock_connectable
     if _connectable and _connectable.enabled
       begin
         _routes_namespace = _connectable.respond_to?(:routes_namespace) ? _connectable.routes_namespace : :main_app
