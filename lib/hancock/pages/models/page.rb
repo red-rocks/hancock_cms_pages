@@ -28,21 +28,21 @@ module Hancock::Pages
 
 
         if Hancock.rails4?
-          belongs_to :connectable, polymorphic: true
+          belongs_to :hancock_connectable, polymorphic: true
         else
-          belongs_to :connectable, polymorphic: true, optional: true
+          belongs_to :hancock_connectable, polymorphic: true, optional: true
         end
 
         def self.goto_hancock
-          self.where(connectable_type: /^Enjoy/).all.map { |s|
-            s.connectable_type = s.connectable_type.sub("Enjoy", "Hancock");
+          self.where(hancock_connectable_type: /^Enjoy/).all.map { |s|
+            s.hancock_connectable_type = s.hancock_connectable_type.sub("Enjoy", "Hancock");
             s.save
           }
         end
 
         before_save do
-          self.connectable_id = nil   if self.connectable_type.nil?
-          self.connectable_type = nil if self.connectable_id.nil?
+          self.hancock_connectable_id = nil   if self.hancock_connectable_id.nil?
+          self.hancock_connectable_type = nil if self.hancock_connectable_type.nil?
           self
         end
 

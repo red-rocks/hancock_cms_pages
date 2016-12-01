@@ -8,19 +8,19 @@ module Hancock::Pages
 
         included do
           scope :connected, -> {
-            where(:connectable_id.ne => nil)
+            where(:hancock_connectable_id.ne => nil)
           }
           scope :unconnected, -> (except_this = nil) {
             if except_this
               where({"$or" =>[
-                {:connectable_id => nil},
+                {:hancock_connectable_id => nil},
                 {"$and" => [
-                  {connectable_type: except_this.class.to_param},
-                  {connectable_id: except_this._id}
+                  {hancock_connectable_type: except_this.class.to_param},
+                  {hancock_connectable_id: except_this._id}
                 ]}
               ]})
             else
-              where(:connectable_id => nil)
+              where(:hancock_connectable_id => nil)
             end
           }
 

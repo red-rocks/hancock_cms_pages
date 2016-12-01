@@ -3,9 +3,9 @@ class <%= camelcased_class_name %> < Hancock::Pages::Page
   # has_and_belongs_to_many :menus, inverse_of: :pages, class_name: "Hancock::Pages::Menu"
 
   # if Hancock.rails4?
-  #   belongs_to :connectable, polymorphic: true, overwrite: true
+  #   belongs_to :hancock_connectable, polymorphic: true, overwrite: true
   # else
-  #   belongs_to :connectable, polymorphic: true, overwrite: true, optional: true
+  #   belongs_to :hancock_connectable, polymorphic: true, overwrite: true, optional: true
   # end
 
   # def nav_options_additions

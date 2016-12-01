@@ -22,7 +22,7 @@ module Hancock::Pages
             field :name do
               searchable true
             end
-            field :connectable do
+            field :hancock_connectable do
               searchable :name
             end
             field :fullpath do
@@ -42,7 +42,7 @@ module Hancock::Pages
           edit do
             field :enabled, :toggle
             field :name
-            field :connectable do
+            field :hancock_connectable do
               read_only true
             end
 
