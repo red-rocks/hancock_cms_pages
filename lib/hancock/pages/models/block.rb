@@ -18,7 +18,7 @@ module Hancock::Pages
         }
 
         attr_accessor :file_pathname
-        after_initialize do
+        after_initialize do 
           self.file_pathname = Pathname.new(file_path) unless file_path.nil?
         end
       end
@@ -54,6 +54,8 @@ module Hancock::Pages
             content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
               if $3 == "FILE" and $2.blank?
                 clear_insertions ? "" : $0
+              elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
+                clear_insertions ? "" : $0
               else
                 (Settings and !$3.blank?) ? Settings.ns($2).get($3).val : "" #temp
               end
@@ -79,6 +81,8 @@ module Hancock::Pages
             content_html.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
               if $3 == "FILE" and $2.blank?
                 clear_insertions ? "" : $0
+              elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
+                clear_insertions ? "" : $0
               else
                 (Settings and !$3.blank?) ? Settings.ns($2).get($3).val : "" #temp
               end
@@ -94,13 +98,27 @@ module Hancock::Pages
           view, opts = view.delete(:view), view
         end
         ret = ""
+        hancock_env = {block: self, called_from: [:render_or_content_html]}
+        hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
+        locals = {}
+        locals[:hancock_env] = hancock_env
+
         if self.render_file and !self.file_path.blank?
-          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :render})
-          ret = view.render(opts) rescue self.content_html.html_safe
+          opts.merge!(partial: self.file_path, locals: locals)
+          # ret = view.render_to_string(opts) rescue self.content_html.html_safe
+          begin
+            ret = view.render_to_string(opts)
+          rescue Exception => ex
+            # puts ex.message
+            puts ex.backtrace
+          end
         else
-          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :content_html})
+          opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content_html(false).gsub("{{FILE}}") do
-            view.render(opts) rescue nil
+            view.render_to_string(opts) rescue nil
+          end.gsub(/\{\{BS\|(.*?)\}\}/) do
+            bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+            view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
           end.html_safe
         end
         if use_wrapper
@@ -119,13 +137,21 @@ module Hancock::Pages
           view, opts = view.delete(:view), view
         end
         ret = ""
+        hancock_env = {block: self, called_from: [:render_or_content]}
+        hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
+        locals = {}
+        locals[:hancock_env] = hancock_env
+
         unless self.file_path.blank?
-          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :render})
-          ret = view.render(opts) rescue self.content
+          opts.merge!(partial: self.file_path, locals: locals)
+          ret = view.render_to_string(opts) rescue self.content
         else
-          opts.merge!(partial: self.file_path, locals: {hancock_block: self, called_from: :content})
+          opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content(false).gsub("{{FILE}}") do
-            view.render(opts) rescue nil
+            view.render_to_string(opts) rescue nil
+          end.gsub(/\{\{BS\|(.*?)\}\}/) do
+            bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+            view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
           end
         end
         ret = yield ret if block_given?

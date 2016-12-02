@@ -87,7 +87,10 @@ module Hancock::Pages
             ''
           else
             # excerpt.gsub(/\{\{(.*?)\}\}/) do
-            excerpt.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+            excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
+              bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+              ApplicationController.new.render_blockset(bs, called_from: :page_excerpt) rescue nil if bs
+            end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
               (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
             end
           end
@@ -108,7 +111,10 @@ module Hancock::Pages
             ''
           else
             # content.gsub(/\{\{(.*?)\}\}/) do
-            content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+            content.gsub(/\{\{BS\|(.*?)\}\}/) do
+              bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+              ApplicationController.new.render_blockset(bs, called_from: :page_content) rescue nil if bs
+            end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
               (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
             end
           end

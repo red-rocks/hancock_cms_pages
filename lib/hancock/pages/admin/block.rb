@@ -32,7 +32,17 @@ module Hancock::Pages
             searchable true
           end
 
-          field :file_path, :string do
+          # field :file_path, :string do
+          #   searchable true
+          # end
+          field :file_path, :enum do
+            enum do
+              _files = Settings.hancock_pages_blocks_whitelist.lines.map(&:strip)
+              _names = Settings.hancock_pages_blocks_human_names.select { |f| _files.include? f }
+              _names.each_pair { |k, v| _names[k] = "#{k} (#{v})" }
+              _names.invert
+            end
+            multiple false
             searchable true
           end
           field :content, :hancock_html do

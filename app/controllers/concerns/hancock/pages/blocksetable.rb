@@ -5,7 +5,6 @@ module Hancock::Pages::Blocksetable
     helper_method :blockset_navigation
   end
 
-  private
   def blockset_navigation(type)
     Proc.new do |primary|
       SimpleNavigation.config.autogenerate_item_ids = false
@@ -29,17 +28,28 @@ module Hancock::Pages::Blocksetable
     end
   end
 
-  def render_blockset(view, type)
+  def render_blockset(*opts)
+    if opts.length == 1 and opts[0].is_a?(Hash)
+      type = opts.delete[:type]
+    else
+      if opts[-1].is_a?(Hash)
+        type = opts[-2] #backward compatibility
+        opts = opts[-1]
+      else
+        type = opts[-1] #backward compatibility
+        opts = {}
+      end
+    end
     ret = []
     begin
       blockset = get_blockset(type)
       blocks = blockset_get_blocks_for_render(blockset)
       blocks.each do |block|
-        ret << block.render_or_content_html(view) do |html|
+        ret << block.render_or_content_html(self, opts) do |html|
           after_render_blockset_block block, html
         end
       end
-      ret = blockset.render(view, ret.join.html_safe) do |html|
+      ret = blockset.render(self, ret.join.html_safe) do |html|
         after_render_blockset blockset, html
       end
     rescue Exception => exception
@@ -53,6 +63,7 @@ module Hancock::Pages::Blocksetable
     ret.is_a?(Array) ? ret.join.html_safe : ret
   end
 
+  private
   def after_render_blockset_block(block, html)
     html
   end
