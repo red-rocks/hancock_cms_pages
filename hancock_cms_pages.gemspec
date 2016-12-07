@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Alexander Kiseliev"]
   spec.email         = ["dev@redrocks.pro"]
 
-  spec.description   = %q{hancock_cms_pages }
+  spec.description   = %q{hancock_cms_pages}
   spec.summary       = %q{hancock_cms_pages}
   spec.homepage      = 'https://github.com/red-rocks/hancock_cms_pages'
   spec.license       = "MIT"
