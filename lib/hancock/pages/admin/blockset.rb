@@ -37,7 +37,7 @@ module Hancock::Pages
           group :blocks do
             active false
             field :blocks do
-              searchable :name
+              # searchable :name
             end
           end
 

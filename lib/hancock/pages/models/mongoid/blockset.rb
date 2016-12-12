@@ -5,6 +5,8 @@ module Hancock::Pages
         extend ActiveSupport::Concern
 
         included do
+          index({enabled: 1, name: 1})
+
           field :name, type: String, default: "", overwrite: true
 
           embeds_many :blocks, inverse_of: :blockset, class_name: "Hancock::Pages::Block"
