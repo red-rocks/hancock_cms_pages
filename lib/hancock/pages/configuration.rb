@@ -22,16 +22,16 @@ module Hancock::Pages
     def initialize
       @menu_max_depth = 2
 
-      @seo_support    = defined? Hancock::Seo
-      @cache_support  = defined?(Hancock::Cache)
+      @seo_support    = !!defined? Hancock::Seo
+      @cache_support  = !!defined?(Hancock::Cache)
 
       @localize   = Hancock.config.localize
 
-      @breadcrumbs_on_rails_support = defined?(BreadcrumbsOnRails)
+      @breadcrumbs_on_rails_support = !!defined?(BreadcrumbsOnRails)
 
-      @model_settings_support = defined?(RailsAdminModelSettings)
-      @user_abilities_support = defined?(RailsAdminUserAbilities)
-      @ra_comments_support = defined?(RailsAdminComments)
+      @model_settings_support = !!defined?(RailsAdminModelSettings)
+      @user_abilities_support = !!defined?(RailsAdminUserAbilities)
+      @ra_comments_support = !!defined?(RailsAdminComments)
     end
   end
 end
