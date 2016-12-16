@@ -75,9 +75,15 @@ module Hancock::Pages
             #   field :text_slug
             # end
 
+            if Hancock::Pages.config.cache_support
+              group :caching, &Hancock::Cache::Admin.caching_block
+            end
+
             Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)
 
-            group :seo_n_sitemap, &Hancock::Seo::Admin.seo_n_sitemap_block
+            if Hancock::Pages.config.seo_support
+              group :seo_n_sitemap, &Hancock::Seo::Admin.seo_n_sitemap_block
+            end
             # group :seo do
             #   active false
             #   field :seo
@@ -87,7 +93,9 @@ module Hancock::Pages
             #   field :sitemap_data
             # end
 
-            # group :caching, &Hancock::Admin.caching_block
+            if Hancock::Pages.config.cache_support
+              group :caching, &Hancock::Cache::Admin.caching_block
+            end
           end
 
           nested_set({

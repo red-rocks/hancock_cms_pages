@@ -1,11 +1,12 @@
 #logo
   
 #main-nav
-  - if @seo_page 
-    - cache @seo_page do
-      = render_navigation &navigation(:main)
-  - elsif @seo_parent_page
-    - cache @seo_parent_page do
-      = render_navigation &navigation(:main)
-  - else
-    = render_navigation &navigation(:main)
+  = cached_navigation(:main)
+  / - if @seo_page 
+  /   - cache @seo_page do
+  /     = render_navigation &navigation(:main)
+  / - elsif @seo_parent_page
+  /   - cache @seo_parent_page do
+  /     = render_navigation &navigation(:main)
+  / - else
+  /   = render_navigation &navigation(:main)

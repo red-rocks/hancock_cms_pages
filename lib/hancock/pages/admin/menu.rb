@@ -34,7 +34,9 @@ module Hancock::Pages
             formatted_value {}
           end
 
-          group :caching, &Hancock::Admin.caching_block
+          if Hancock::Pages.config.cache_support
+            group :caching, &Hancock::Cache::Admin.caching_block
+          end
 
           Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)
 

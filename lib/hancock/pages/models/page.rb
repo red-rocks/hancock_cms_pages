@@ -10,6 +10,10 @@ module Hancock::Pages
         include Hancock::Seo::SitemapDataField
       end
 
+      if Hancock::Pages.config.cache_support
+        include Hancock::Cache::Cacheable
+      end
+
       include Hancock::Pages.orm_specific('Page')
 
       # if Hancock.config.search_enabled
@@ -88,6 +92,7 @@ module Hancock::Pages
           if excerpt.nil?
             ''
           else
+            # {{BS|%blockset_name%}}
             # excerpt.gsub(/\{\{(.*?)\}\}/) do
             excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
               bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
@@ -112,6 +117,7 @@ module Hancock::Pages
           if content.nil?
             ''
           else
+            # {{BS|%blockset_name%}}
             # content.gsub(/\{\{(.*?)\}\}/) do
             content.gsub(/\{\{BS\|(.*?)\}\}/) do
               bs = Hancock::Pages::Blockset.enabled.where(name: $1).first

@@ -1,9 +1,11 @@
 - menu_key ||= :main
 - if @seo_page 
-  - cache @seo_page do
+  - menu = Hancock::Pages::Menu.find(menu_key)
+  - cache [menu, @seo_page] do
     = render_navigation &navigation(menu_key)
 - elsif @seo_parent_page
-  - cache @seo_parent_page do
+  - menu = Hancock::Pages::Menu.find(menu_key)
+  - cache [menu, @seo_parent_page] do
     = render_navigation &navigation(menu_key)
 - else
   = render_navigation &navigation(menu_key)

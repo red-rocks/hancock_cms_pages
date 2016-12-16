@@ -5,7 +5,7 @@ module Hancock::Pages
         extend ActiveSupport::Concern
 
         included do
-          index({enabled: 1, name: 1})
+          index({enabled: 1, name: 1}, {background: true})
 
           field :name, type: String, default: "", overwrite: true
 

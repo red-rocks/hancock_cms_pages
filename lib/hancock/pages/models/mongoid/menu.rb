@@ -5,7 +5,7 @@ module Hancock::Pages
         extend ActiveSupport::Concern
 
         included do
-          index({enabled: 1, name: 1})
+          index({enabled: 1, name: 1}, {background: true})
 
           has_and_belongs_to_many :pages, inverse_of: :menus, class_name: "Hancock::Pages::Page", index: true
           alias_method :items, :pages
