@@ -1,4 +1,5 @@
 - menu_key ||= :main
+- menu_key = menu_key.to_s
 - if @seo_page 
   - menu = Hancock::Pages::Menu.find(menu_key)
   - cache [menu, @seo_page] do
