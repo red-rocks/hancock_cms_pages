@@ -36,7 +36,14 @@ module Hancock::Pages
             end
             field :slug do
               searchable true
+              searchable_columns do
+                [{column: "#{abstract_model.table_name}._slugs", type: :string}]
+              end
+              queryable true
             end
+
+            group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
+            group :caching, &Hancock::Cache::Admin.caching_block
           end
 
           edit do
