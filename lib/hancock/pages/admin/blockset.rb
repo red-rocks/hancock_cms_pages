@@ -37,7 +37,16 @@ module Hancock::Pages
           group :blocks do
             active false
             field :blocks do
-              # searchable :name
+              searchable true
+              searchable_columns do
+                [
+                  { column: "#{abstract_model.table_name}.blocks.name",   type: :string },
+                  { column: "#{abstract_model.table_name}.blocks.menu_link_content",  type: :string },
+                  { column: "#{abstract_model.table_name}.blocks.pageblock_selector",  type: :string },
+                  { column: "#{abstract_model.table_name}.blocks.file_path",  type: :string },
+                  { column: "#{abstract_model.table_name}.blocks.content_html",  type: :string }
+                ]
+              end
             end
           end
 
@@ -57,9 +66,9 @@ module Hancock::Pages
           # end
 
           sort_embedded(
-              {
-                  fields: [:blocks]
-              }
+            {
+              fields: [:blocks]
+            }
           )
 
           if block_given?
