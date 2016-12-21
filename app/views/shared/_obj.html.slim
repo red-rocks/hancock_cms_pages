@@ -4,12 +4,12 @@
           
       - if obj.content.blank?
         - unless @seo_page.nil?
-          = raw @seo_page.page_content
+          == begin @seo_page.page_content(self) rescue @seo_page.page_content end
       - else
         - if obj.is_a?(Hancock::Pages::Page)
-          = raw obj.page_content
+          == begin obj.page_content(self) rescue obj.page_content end
         - else
-          = raw obj.content
+          == obj.content
               
       .admin_button
         = render 'shared/admin_link', obj: obj

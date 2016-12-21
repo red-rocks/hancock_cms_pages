@@ -30,9 +30,9 @@ module Hancock::Pages
       end
 
 
-      def render(view, content = "")
+      def render(view = ApplicationController.new, content = "")
         if view.is_a?(Hash)
-          view, content = view[:view], view[:content]
+          view, content = view[:view] || ApplicationController.new, view[:content]
         end
         ret = content
         if use_wrapper

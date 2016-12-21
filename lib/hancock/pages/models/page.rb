@@ -86,20 +86,22 @@ module Hancock::Pages
         @excerpt_used.nil? && !excerpt.blank?
       end
 
-      def page_excerpt
+      def page_excerpt(view = ApplicationController.new)
         if @excerpt_used.nil?
-          @excerpt_used = true
           if excerpt.nil?
+            @excerpt_used = true
             ''
           else
             # {{BS|%blockset_name%}}
             # excerpt.gsub(/\{\{(.*?)\}\}/) do
-            excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
+            _excerpt = excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
               bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-              ApplicationController.new.render_blockset(bs, called_from: :page_excerpt) rescue nil if bs
+              view.render_blockset(bs, called_from: :page_excerpt) rescue nil if bs
             end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
               (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
             end
+            @excerpt_used = true
+            _excerpt
           end
         else
           ''
@@ -111,21 +113,23 @@ module Hancock::Pages
         @content_used.nil? && !content.blank?
       end
 
-      def page_content
+      def page_content(view = ApplicationController.new)
         if @content_used.nil?
-          @content_used = true
           if content.nil?
+            @content_used = true
             ''
           else
             # {{BS|%blockset_name%}}
             # content.gsub(/\{\{(.*?)\}\}/) do
-            content.gsub(/\{\{BS\|(.*?)\}\}/) do
+            _content = content.gsub(/\{\{BS\|(.*?)\}\}/) do
               bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-              ApplicationController.new.render_blockset(bs, called_from: :page_content) rescue nil if bs
+              view.render_blockset(bs, called_from: :page_content) rescue nil if bs
             end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
               (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
             end
           end
+          @content_used = true
+          _content
         else
           ''
         end
