@@ -111,8 +111,8 @@ module Hancock::Pages
           opts.merge!(partial: self.file_path, locals: locals)
           # ret = view.render_to_string(opts) rescue self.content_html.html_safe
           begin
-            # ret = view.render_to_string(opts)
-            ret = view.render(opts)
+            ret = view.render_to_string(opts)
+            # ret = view.render(opts)
           rescue Exception => ex
             puts ex.message
             puts ex.backtrace
@@ -120,8 +120,8 @@ module Hancock::Pages
         else
           opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content_html(false).gsub("{{FILE}}") do
-            # view.render_to_string(opts) rescue nil
-            view.render(opts) rescue nil
+            view.render_to_string(opts) rescue nil
+            # view.render(opts) rescue nil
           end.gsub(/\{\{BS\|(.*?)\}\}/) do
             bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
             view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
@@ -150,13 +150,13 @@ module Hancock::Pages
 
         unless self.file_path.blank?
           opts.merge!(partial: self.file_path, locals: locals)
-          # ret = view.render_to_string(opts) rescue self.content
-          ret = view.render(opts) rescue self.content
+          ret = view.render_to_string(opts) rescue self.content
+          # ret = view.render(opts) rescue self.content
         else
           opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content(false).gsub("{{FILE}}") do
-            # view.render_to_string(opts) rescue nil
-            view.render(opts) rescue nil
+            view.render_to_string(opts) rescue nil
+            # view.render(opts) rescue nil
           end.gsub(/\{\{BS\|(.*?)\}\}/) do
             bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
             view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
