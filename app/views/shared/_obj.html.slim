@@ -6,7 +6,7 @@
         - unless @seo_page.nil?
           = raw @seo_page.page_content
       - else
-        - if obj.id_a?(Hancock::Pages::Page)
+        - if obj.is_a?(Hancock::Pages::Page)
           = raw obj.page_content
         - else
           = raw obj.content
