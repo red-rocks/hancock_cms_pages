@@ -6,7 +6,10 @@
         - unless @seo_page.nil?
           = raw @seo_page.page_content
       - else
-        = raw obj.content
+        - if obj.id_a?(Hancock::Pages::Page)
+          = raw obj.page_content
+        - else
+          = raw obj.content
               
       .admin_button
         = render 'shared/admin_link', obj: obj
