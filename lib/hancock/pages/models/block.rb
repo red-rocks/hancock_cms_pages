@@ -110,13 +110,11 @@ module Hancock::Pages
         if self.render_file and !self.file_path.blank?
           opts.merge!(partial: self.file_path, locals: locals)
           # ret = view.render_to_string(opts) rescue self.content_html.html_safe
-          puts opts.inspect
-          puts view.request
           begin
             # ret = view.render_to_string(opts)
             ret = view.render(opts)
           rescue Exception => ex
-            # puts ex.message
+            puts ex.message
             puts ex.backtrace
           end
         else
