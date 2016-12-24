@@ -1,5 +1,5 @@
 - unless obj.nil?
-  - cache [obj, @seo_page] do
+  - cache [obj, @seo_page, (current_user and current_user.admin?).to_s] do
     .text_content
           
       - if obj.content.blank?
@@ -11,8 +11,6 @@
         - else
           == obj.content
               
-      .admin_button
-        = render 'shared/admin_link', obj: obj
-      - if !@seo_page.nil? && (@seo_page.id != obj.id || @seo_page.class.name != obj.class.name)
-        .admin_button
-          = render 'shared/admin_link', obj: @seo_page
+  = render 'shared/admin_link', obj: obj
+  - if !@seo_page.nil? && (@seo_page.id != obj.id || @seo_page.class.name != obj.class.name)
+    = render 'shared/admin_link', obj: @seo_page
