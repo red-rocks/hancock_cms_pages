@@ -1,10 +1,14 @@
 module Hancock::Pages
   module Admin
 
-    def self.menu_block(is_active = false)
+    def self.menu_block(is_active = false, options = {})
+      if is_active.is_a?(Hash)
+        is_active, options = (is_active[:active] || false), is_active
+      end
+
       Proc.new {
         active false
-        label I18n.t('hancock.menu_title')
+        label options[:label] || I18n.t('hancock.menu_title')
         field :menus do
           searchable :name, :text_slug
         end
@@ -24,15 +28,22 @@ module Hancock::Pages
           searchable true
         end
 
+        Hancock::RailsAdminGroupPatch::hancock_cms_group(self, options[:fields] || {})
+
         if block_given?
           yield self
         end
       }
     end
 
-    def self.wrapper_block(is_active = false)
+    def self.wrapper_block(is_active = false, options = {})
+      if is_active.is_a?(Hash)
+        is_active, options = (is_active[:active] || false), is_active
+      end
+
       Proc.new {
         active is_active
+        options[:label] and label(options[:label])
         field :use_wrapper, :toggle
         field :wrapper_tag, :string do
           searchable true
@@ -49,6 +60,8 @@ module Hancock::Pages
             bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
           end
         end
+
+        Hancock::RailsAdminGroupPatch::hancock_cms_group(self, options[:fields] || {})
 
         if block_given?
           yield self

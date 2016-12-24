@@ -7,8 +7,9 @@ module Hancock::Pages
         elsif nav_label.is_a?(Array)
           nav_label, fields = nil, nav_label
         end
-        Proc.new {
-          navigation_label(!nav_label.blank? ? nav_label : I18n.t('hancock.pages'))
+
+          Proc.new {
+            navigation_label(!nav_label.blank? ? nav_label : I18n.t('hancock.pages'))
 
           field :enabled, :toggle do
             searchable false
