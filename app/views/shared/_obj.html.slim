@@ -1,5 +1,6 @@
 - unless obj.nil?
-  - cache [obj, @seo_page, (current_user and current_user.admin?).to_s] do
+  - _cache_helper = (Hancock::Pages.config.cache_support ? :hancock_cache : :cache)
+  - send _cache_helper [obj, @seo_page, (current_user and current_user.admin?).to_s].uniq do
     .text_content
           
       - if obj.content.blank?

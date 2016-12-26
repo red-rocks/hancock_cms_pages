@@ -1,12 +1,14 @@
+- _cache_helper = (Hancock::Pages.config.cache_support ? :hancock_cache : :cache)
 - menu_key ||= :main
 - menu_key = menu_key.to_s
+
 - if @seo_page 
   - menu = Hancock::Pages::Menu.find(menu_key)
-  - cache [menu, @seo_page] do
+  - send _cache_helper, [menu, @seo_page] do
     = render_navigation &navigation(menu_key)
 - elsif @seo_parent_page
   - menu = Hancock::Pages::Menu.find(menu_key)
-  - cache [menu, @seo_parent_page] do
+  - send _cache_helper, [menu, @seo_parent_page] do
     = render_navigation &navigation(menu_key)
 - else
   = render_navigation &navigation(menu_key)

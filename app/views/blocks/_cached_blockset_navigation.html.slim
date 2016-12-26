@@ -1,12 +1,14 @@
+- _cache_helper = (Hancock::Pages.config.cache_support ? :hancock_cache : :cache)
 - blockset_key ||= :main
 - blockset_key = blockset_key.to_s
+
 - if @seo_page 
   - blockset = Hancock::Pages::Blockset.find(blockset_key)
-  - cache [blockset, @seo_page] do
+  - send _cache_helper, [blockset, @seo_page] do
     = render_navigation &blockset_navigation(blockset_key)
 - elsif @seo_parent_page
   - blockset = Hancock::Pages::Blockset.find(blockset_key)
-  - cache [blockset, @seo_parent_page] do
+  - send _cache_helper, [blockset, @seo_parent_page] do
     = render_navigation &blockset_navigation(blockset_key)
 - else
   = render_navigation &blockset_navigation(blockset_key)

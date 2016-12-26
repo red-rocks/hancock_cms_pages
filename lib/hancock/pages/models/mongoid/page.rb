@@ -37,6 +37,12 @@ module Hancock::Pages
           hancock_cms_html_field :content, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :fullpath, type: String, default: ""
 
+          field :use_wrapper, type: Boolean, default: false
+          field :wrapper_tag, type: String, default: ""
+          field :wrapper_class, type: String, default: ""
+          field :wrapper_id, type: String, default: ""
+          field :wrapper_attributes, type: Hash, default: {}
+
           has_and_belongs_to_many :menus, inverse_of: :pages, class_name: "Hancock::Pages::Menu", index: true
 
           scope :sorted, -> { order_by([:lft, :asc]) }

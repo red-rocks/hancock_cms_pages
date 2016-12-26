@@ -1,2 +1,15 @@
-- cache @seo_page do
-  = render 'shared/obj', obj: @seo_page
+- _cache_helper = (Hancock::News.config.cache_support ? :hancock_cache : :cache)
+- _partial_path = (Hancock::Pages.config.seo_support ? 'shared/obj_with_seo' : 'shared/obj')
+
+- send _cache_helper, @seo_page do
+  - if use_wrapper
+    ruby: 
+      _attrs = {
+        class: @seo_page.wrapper_class,
+        id: @seo_page.wrapper_id
+      }.merge(@seo_page.wrapper_attributes)
+    = view.content_tag @seo_page.wrapper_tag, _attrs do
+      = render _partial_path, obj: @seo_page
+      
+    - else
+      = render _partial_path, obj: @seo_page

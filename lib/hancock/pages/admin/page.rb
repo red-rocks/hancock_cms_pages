@@ -63,6 +63,8 @@ module Hancock::Pages
             #   # field :content_html, :ck_editor
             #   # field :content_clear, :toggle
             # end
+            
+            group :wrapper, &Hancock::Pages::Admin.wrapper_block
 
 
             group :menu, &Hancock::Pages::Admin.menu_block
