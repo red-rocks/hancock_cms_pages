@@ -39,9 +39,14 @@ module Hancock::Pages
           field :file_path, :enum do
             enum do
               _files = Settings.hancock_pages_blocks_whitelist.lines.map(&:strip)
-              _names = Settings.hancock_pages_blocks_human_names.select { |f| _files.include? f }
-              _names.each_pair { |k, v| _names[k] = "#{k} (#{v})" }
-              _names.invert
+              # _names = Settings.hancock_pages_blocks_human_names.select { |f| _files.include? f }
+              # _names.each_pair { |k, v| _names[k] = "#{k} (#{v})" }
+              # _names.invert
+              # "hancock/home/about/goto_catalog": "Реализованные проекты"
+              # "hancock/home/about/counters": "Камчатка в цифрах"
+
+              _names = Settings.hancock_pages_blocks_human_names
+              _files.map { |f| _names[f] ? ["#{_names[f]} (#{f})", f] : [f] }
             end
             multiple false
             searchable true
