@@ -1,7 +1,7 @@
 module Hancock::Pages::SeoPages
   extend ActiveSupport::Concern
   included do
-    before_filter :find_page
+    before_action :find_page
   end
 
   private

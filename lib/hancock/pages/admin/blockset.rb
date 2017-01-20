@@ -20,23 +20,11 @@ module Hancock::Pages
             searchable true
           end
 
-          group :wrapper, &Hancock::Pages::Admin.wrapper_block
-          # group :wrapper do
-          #   active false
-          #   field :use_wrapper, :toggle
-          #   field :wrapper_tag, :string
-          #   field :wrapper_class, :string
-          #   field :wrapper_id, :string
-          #   field :wrapper_attributes, :text do
-          #     formatted_value do
-          #       bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
-          #     end
-          #   end
-          # end
-
           group :blocks do
+            weight 10
             active false
             field :blocks do
+              eager_load false
               searchable true
               searchable_columns do
                 [
@@ -49,6 +37,22 @@ module Hancock::Pages
               end
             end
           end
+
+          group(:wrapper, &Hancock::Pages::Admin.wrapper_block do
+            weight 5
+          end)
+          # group :wrapper do
+          #   active false
+          #   field :use_wrapper, :toggle
+          #   field :wrapper_tag, :string
+          #   field :wrapper_class, :string
+          #   field :wrapper_id, :string
+          #   field :wrapper_attributes, :text do
+          #     formatted_value do
+          #       bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
+          #     end
+          #   end
+          # end
 
           Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)
 

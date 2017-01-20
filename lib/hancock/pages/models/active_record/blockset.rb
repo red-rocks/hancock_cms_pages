@@ -11,7 +11,8 @@ module Hancock::Pages
             translates :name
           end
 
-          has_many :page_blocks, class_name: "Hancock::Pages::Blockset"
+          has_many :blocks, class_name: "Hancock::Pages::Blockset", inverse_of: :blockset
+          accepts_nested_attributes_for :blocks, allow_destroy: true
         end
       end
     end

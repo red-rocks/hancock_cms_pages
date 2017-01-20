@@ -43,7 +43,9 @@ module Hancock::Pages
             end
 
             group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
-            group :caching, &Hancock::Cache::Admin.caching_block
+            if Hancock::Pages.config.cache_support
+              group :caching, &Hancock::Cache::Admin.caching_block
+            end
           end
 
           edit do
@@ -63,7 +65,7 @@ module Hancock::Pages
             #   # field :content_html, :ck_editor
             #   # field :content_clear, :toggle
             # end
-            
+
             group :wrapper, &Hancock::Pages::Admin.wrapper_block
 
 
