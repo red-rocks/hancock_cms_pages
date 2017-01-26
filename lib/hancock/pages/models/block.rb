@@ -6,6 +6,10 @@ module Hancock::Pages
       include Hancock::Enableable
       include ManualSlug
 
+      if Hancock::Pages.config.insertions_support
+        include Hancock::Insertions
+      end
+
       include Hancock::Pages.orm_specific('Block')
 
       included do
@@ -20,6 +24,79 @@ module Hancock::Pages
         attr_accessor :file_pathname
         after_initialize do
           self.file_pathname = Pathname.new(file_path) unless file_path.nil?
+        end
+
+        # insertions_for(:content)
+        insertions_for(:content_html)
+        alias :block_content :page_content
+        alias :block_content_html :page_content_html
+        def block_content(clear_insertions = true)
+          if clear_insertions.is_a?(Hash)
+            clear_insertions = clear_insertions[:clear_insertions]
+          end
+          if @content_used.nil?
+            if content.nil?
+              @content_used = true
+              ''
+            else
+              # content.gsub(/\{\{(.*?)\}\}/) do
+              _content = content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+                if $3 == "FILE" and $2.blank?
+                  clear_insertions ? "" : $0
+                elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
+                  clear_insertions ? "" : $0
+                elsif $2 == "self" and !$3.blank?
+                  if clear_insertions
+                    ""
+                  elsif Hancock::Pages.config.insertions_support
+                    get_insertion($3)
+                  else
+                    $0
+                  end
+                else
+                  (Settings and !$3.blank? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+                end
+              end
+              @content_used = true
+              _content
+            end
+          else
+            ''
+          end
+        end
+        def block_content_html(clear_insertions = true)
+          if clear_insertions.is_a?(Hash)
+            clear_insertions = clear_insertions[:clear_insertions]
+          end
+          if @content_html_used.nil?
+            if content_html.nil?
+              @content_html_used = true
+              ''
+            else
+              # content.gsub(/\{\{(.*?)\}\}/) do
+              _content_html = content_html.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+                if $3 == "FILE" and $2.blank?
+                  clear_insertions ? "" : $0
+                elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
+                  clear_insertions ? "" : $0
+                elsif $2 == "self" and !$3.blank?
+                  if clear_insertions
+                    ""
+                  elsif Hancock::Pages.config.insertions_support
+                    get_insertion($3)
+                  else
+                    $0
+                  end
+                else
+                  (Settings and !$3.blank? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+                end
+              end
+              @content_html_used = true
+              _content_html
+            end
+          else
+            ''
+          end
         end
       end
 
@@ -37,64 +114,11 @@ module Hancock::Pages
         self.file_pathname_for_fs.to_s
       end
 
-
       def has_content?
         @content_used.nil? && !content.blank?
       end
-      def block_content(clear_insertions = true)
-        if clear_insertions.is_a?(Hash)
-          clear_insertions = clear_insertions[:clear_insertions]
-        end
-        if @content_used.nil?
-          if content.nil?
-            @content_used = true
-            ''
-          else
-            # content.gsub(/\{\{(.*?)\}\}/) do
-            _content = content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-              if $3 == "FILE" and $2.blank?
-                clear_insertions ? "" : $0
-              elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
-                clear_insertions ? "" : $0
-              else
-                (Settings and !$3.blank?) ? Settings.ns($2).get($3).val : "" #temp
-              end
-            end
-            @content_used = true
-            _content
-          end
-        else
-          ''
-        end
-      end
       def has_content_html?
         @content_html_used.nil? && !content_html.blank?
-      end
-      def block_content_html(clear_insertions = true)
-        if clear_insertions.is_a?(Hash)
-          clear_insertions = clear_insertions[:clear_insertions]
-        end
-        if @content_html_used.nil?
-          if content_html.nil?
-            @content_html_used = true
-            ''
-          else
-            # content.gsub(/\{\{(.*?)\}\}/) do
-            _content_html = content_html.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-              if $3 == "FILE" and $2.blank?
-                clear_insertions ? "" : $0
-              elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
-                clear_insertions ? "" : $0
-              else
-                (Settings and !$3.blank?) ? Settings.ns($2).get($3).val : "" #temp
-              end
-            end
-            @content_html_used = true
-            _content_html
-          end
-        else
-          ''
-        end
       end
 
       def render_or_content_html(view = ApplicationController.new, opts = {})

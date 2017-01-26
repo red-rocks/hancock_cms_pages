@@ -13,6 +13,9 @@ module Hancock::Pages
       if Hancock::Pages.config.cache_support
         include Hancock::Cache::Cacheable
       end
+      if Hancock::Pages.config.insertions_support
+        include Hancock::Insertions
+      end
 
       include Hancock::Pages.orm_specific('Page')
 
@@ -68,6 +71,62 @@ module Hancock::Pages
           ret += [:comments, :model_comments] if Hancock::Pages.config.ra_comments_support
           ret.freeze
         end
+
+        def page_excerpt(view = ApplicationController.new)
+          if @excerpt_used.nil?
+            if excerpt.nil?
+              @excerpt_used = true
+              ''
+            else
+              # {{BS|%blockset_name%}}
+              # excerpt.gsub(/\{\{(.*?)\}\}/) do
+              _excerpt = excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
+                bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+                view.render_blockset(bs, called_from: :page_excerpt) rescue nil if bs
+              end.gsub(/\{\{self\.(.*?)\}\}/) do
+                if Hancock::Pages.config.insertions_support
+                  get_insertion($1)
+                else
+                  $0
+                end
+              end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+                (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+              end
+              @excerpt_used = true
+              _excerpt
+            end
+          else
+            ''
+          end
+        end
+
+        def page_content(view = ApplicationController.new)
+          if @content_used.nil?
+            if content.nil?
+              @content_used = true
+              ''
+            else
+              # {{BS|%blockset_name%}}
+              # content.gsub(/\{\{(.*?)\}\}/) do
+              _content = content.gsub(/\{\{BS\|(.*?)\}\}/) do
+                bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+                view.render_blockset(bs, called_from: :page_content) rescue nil if bs
+              end.gsub(/\{\{self\.(.*?)\}\}/) do
+                if Hancock::Pages.config.insertions_support
+                  get_insertion($1)
+                else
+                  $0
+                end
+              end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+                (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+              end
+            end
+            @content_used = true
+            _content
+          else
+            ''
+          end
+        end
       end
 
       def page_h1
@@ -81,58 +140,13 @@ module Hancock::Pages
         redirect.blank? ? fullpath : redirect
       end
 
-
       def has_excerpt?
         @excerpt_used.nil? && !excerpt.blank?
-      end
-
-      def page_excerpt(view = ApplicationController.new)
-        if @excerpt_used.nil?
-          if excerpt.nil?
-            @excerpt_used = true
-            ''
-          else
-            # {{BS|%blockset_name%}}
-            # excerpt.gsub(/\{\{(.*?)\}\}/) do
-            _excerpt = excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
-              bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-              view.render_blockset(bs, called_from: :page_excerpt) rescue nil if bs
-            end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-              (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
-            end
-            @excerpt_used = true
-            _excerpt
-          end
-        else
-          ''
-        end
       end
 
 
       def has_content?
         @content_used.nil? && !content.blank?
-      end
-
-      def page_content(view = ApplicationController.new)
-        if @content_used.nil?
-          if content.nil?
-            @content_used = true
-            ''
-          else
-            # {{BS|%blockset_name%}}
-            # content.gsub(/\{\{(.*?)\}\}/) do
-            _content = content.gsub(/\{\{BS\|(.*?)\}\}/) do
-              bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-              view.render_blockset(bs, called_from: :page_content) rescue nil if bs
-            end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-              (Settings and !$3.nil?) ? Settings.ns($2).get($3).val : "" #temp
-            end
-          end
-          @content_used = true
-          _content
-        else
-          ''
-        end
       end
 
       def is_current?(url)

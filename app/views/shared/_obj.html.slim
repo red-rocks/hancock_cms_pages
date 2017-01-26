@@ -1,3 +1,4 @@
+- obj ||= nil
 - unless obj.nil?
   - _cache_helper = (Hancock::Pages.config.cache_support ? :hancock_cache : :cache)
   - send _cache_helper [obj, @seo_page, (current_user and current_user.admin?).to_s].uniq do
@@ -5,12 +6,15 @@
           
       - if obj.content.blank?
         - unless @seo_page.nil?
-          == begin @seo_page.page_content(self) rescue @seo_page.page_content end
+          == @seo_page.page_content(self) rescue @seo_page.page_content
       - else
         - if obj.is_a?(Hancock::Pages::Page)
-          == begin obj.page_content(self) rescue obj.page_content end
+          == obj.page_content(self) rescue obj.page_content
         - else
-          == obj.content
+          - if obj.respond_to?(:page_content)
+            == obj.page_content rescue obj.content
+          - else
+            == obj.content
               
   = render 'shared/admin_link', obj: obj
   - if !@seo_page.nil? && (@seo_page.id != obj.id || @seo_page.class.name != obj.class.name)

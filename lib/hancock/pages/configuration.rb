@@ -10,6 +10,7 @@ module Hancock::Pages
 
     attr_accessor :seo_support
     attr_accessor :cache_support
+    attr_accessor :insertions_support
 
     attr_accessor :localize
 
@@ -22,8 +23,9 @@ module Hancock::Pages
     def initialize
       @menu_max_depth = 2
 
-      @seo_support    = !!defined? Hancock::Seo
-      @cache_support  = !!defined?(Hancock::Cache)
+      @seo_support        = !!defined? Hancock::Seo
+      @cache_support      = !!defined?(Hancock::Cache)
+      @insertions_support = true
 
       @localize   = Hancock.config.localize
 

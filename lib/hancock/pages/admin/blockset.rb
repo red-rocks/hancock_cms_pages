@@ -24,7 +24,7 @@ module Hancock::Pages
             weight 10
             active false
             field :blocks do
-              eager_load false
+              eager_load(false) rescue nil
               searchable true
               searchable_columns do
                 [
