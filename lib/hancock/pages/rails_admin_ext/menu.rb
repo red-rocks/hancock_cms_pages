@@ -134,7 +134,7 @@ module RailsAdmin
 
             end
 
-            redirect_to :back unless params['ajax'].present?
+            redirect_back(fallback_location: dashboard_path) unless params['ajax'].present?
           end
         end
 

@@ -12,7 +12,7 @@ module Hancock::Pages
           Settings.hancock_pages_blocks_human_names(default: '', kind: :yaml, label: 'Имена блоков')
         end
 
-        # if Settings and Settings.table_exists?
+        # if Settings and Settings.table_exists? and Hancock::Pages.model_settings_support
         #   Hancock::Pages::Blockset.settings.blocks_whitelist(default: '', kind: :text, label: 'Белый список блоков')
         #   Hancock::Pages::Blockset.settings.blocks_human_names(default: '', kind: :yaml, label: 'Имена блоков')
         #
