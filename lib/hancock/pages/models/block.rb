@@ -26,10 +26,12 @@ module Hancock::Pages
           self.file_pathname = Pathname.new(file_path) unless file_path.nil?
         end
 
-        # insertions_for(:content)
-        insertions_for(:content_html)
-        alias :block_content :page_content
-        alias :block_content_html :page_content_html
+        if Hancock::Pages.config.insertions_support
+          # insertions_for(:content)
+          insertions_for(:content_html)
+          alias :block_content :page_content
+          alias :block_content_html :page_content_html
+        end
         def block_content(clear_insertions = true)
           if clear_insertions.is_a?(Hash)
             clear_insertions = clear_insertions[:clear_insertions]
