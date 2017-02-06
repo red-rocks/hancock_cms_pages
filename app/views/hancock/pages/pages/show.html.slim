@@ -8,7 +8,7 @@
         class: @seo_page.wrapper_class,
         id: @seo_page.wrapper_id
       }.merge(@seo_page.wrapper_attributes)
-    = view.content_tag @seo_page.wrapper_tag, _attrs do
+    = content_tag @seo_page.wrapper_tag, _attrs do
       = render _partial_path, obj: @seo_page      
   - else
     = render _partial_path, obj: @seo_page
