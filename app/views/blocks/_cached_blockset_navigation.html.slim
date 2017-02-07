@@ -4,11 +4,23 @@
 
 - if @seo_page 
   - blockset = Hancock::Pages::Blockset.find(blockset_key)
+  - if Hancock::Pages.config.cache_support
+    - [blockset, @seo_page].compact.each do |obj|
+      - if obj.respond_to?(:cache_keys_str) and obj.respond_to?(:cache_keys) and obj.respond_to?(:cache_keys=)
+        - obj.cache_keys |= hancock_cache_views_keys
+        - obj.save if obj.cache_keys_str_changed?
   - send _cache_helper, [blockset, @seo_page] do
     = render_navigation &blockset_navigation(blockset_key)
+    
 - elsif @seo_parent_page
   - blockset = Hancock::Pages::Blockset.find(blockset_key)
+  - if Hancock::Pages.config.cache_support
+    - [blockset, @seo_parent_page].compact.each do |obj|
+      - if obj.respond_to?(:cache_keys_str) and obj.respond_to?(:cache_keys) and obj.respond_to?(:cache_keys=)
+        - obj.cache_keys |= hancock_cache_views_keys
+        - obj.save if obj.cache_keys_str_changed?
   - send _cache_helper, [blockset, @seo_parent_page] do
     = render_navigation &blockset_navigation(blockset_key)
+    
 - else
   = render_navigation &blockset_navigation(blockset_key)

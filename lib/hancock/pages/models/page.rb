@@ -72,12 +72,14 @@ module Hancock::Pages
           ret.freeze
         end
 
-        def page_excerpt(view = ApplicationController.new)
+        def page_excerpt(view = Hancock::Pages::PagesController.new)
           if @excerpt_used.nil?
             if excerpt.nil?
               @excerpt_used = true
               ''
             else
+              view.extend ActionView::Helpers::TagHelper
+              view.extend ActionView::Context
               # {{BS|%blockset_name%}}
               # excerpt.gsub(/\{\{(.*?)\}\}/) do
               _excerpt = excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
@@ -100,12 +102,15 @@ module Hancock::Pages
           end
         end
 
-        def page_content(view = ApplicationController.new)
+        def page_content(view = Hancock::Pages::PagesController.new)
           if @content_used.nil?
             if content.nil?
               @content_used = true
               ''
             else
+              view.extend ActionView::Helpers::TagHelper
+              view.extend ActionView::Context
+
               # {{BS|%blockset_name%}}
               # content.gsub(/\{\{(.*?)\}\}/) do
               _content = content.gsub(/\{\{BS\|(.*?)\}\}/) do

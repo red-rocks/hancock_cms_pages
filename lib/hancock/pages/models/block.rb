@@ -123,10 +123,14 @@ module Hancock::Pages
         @content_html_used.nil? && !content_html.blank?
       end
 
-      def render_or_content_html(view = ApplicationController.new, opts = {})
+      def render_or_content_html(view = Hancock::Pages::PagesController.new, opts = {})
         if view.is_a?(Hash)
-          view, opts = view.delete(:view) || ApplicationController.new, view
+          view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
+        [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
+          view.prepend lib_extends unless view < lib_extends
+        end
+
         ret = ""
         hancock_env = {block: self, called_from: [:render_or_content_html]}
         hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
@@ -164,10 +168,14 @@ module Hancock::Pages
         return ret
       end
 
-      def render_or_content(view = ApplicationController.new, opts = {})
+      def render_or_content(view = Hancock::Pages::PagesController.new, opts = {})
         if view.is_a?(Hash)
-          view, opts = view.delete(:view) || ApplicationController.new, view
+          view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
+        [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
+          view.prepend lib_extends unless view < lib_extends
+        end
+
         ret = ""
         hancock_env = {block: self, called_from: [:render_or_content]}
         hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?

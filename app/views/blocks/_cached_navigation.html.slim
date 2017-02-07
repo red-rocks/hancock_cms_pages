@@ -4,11 +4,23 @@
 
 - if @seo_page 
   - menu = Hancock::Pages::Menu.find(menu_key)
+  - if Hancock::Pages.config.cache_support
+    - [menu, @seo_page].compact.each do |obj|
+      - if obj.respond_to?(:cache_keys_str) and obj.respond_to?(:cache_keys) and obj.respond_to?(:cache_keys=)
+        - obj.cache_keys |= hancock_cache_views_keys
+        - obj.save if obj.cache_keys_str_changed?
   - send _cache_helper, [menu, @seo_page] do
     = render_navigation &navigation(menu_key)
+    
 - elsif @seo_parent_page
   - menu = Hancock::Pages::Menu.find(menu_key)
+  - if Hancock::Pages.config.cache_support
+    - [menu, @seo_parent_page].compact.each do |obj|
+      - if obj.respond_to?(:cache_keys_str) and obj.respond_to?(:cache_keys) and obj.respond_to?(:cache_keys=)
+        - obj.cache_keys |= hancock_cache_views_keys
+        - obj.save if obj.cache_keys_str_changed?
   - send _cache_helper, [menu, @seo_parent_page] do
     = render_navigation &navigation(menu_key)
+    
 - else
   = render_navigation &navigation(menu_key)

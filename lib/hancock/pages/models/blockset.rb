@@ -30,10 +30,14 @@ module Hancock::Pages
       end
 
 
-      def render(view = ApplicationController.new, content = "")
+      def render(view = Hancock::Pages::PagesController.new, content = "")
         if view.is_a?(Hash)
-          view, content = view[:view] || ApplicationController.new, view[:content]
+          view, content = view[:view] || Hancock::Pages::PagesController.new, view[:content]
         end
+        [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
+          view.prepend lib_extends unless view < lib_extends
+        end
+
         ret = content
         if use_wrapper
           _attrs = {
