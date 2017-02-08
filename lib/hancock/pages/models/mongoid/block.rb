@@ -15,8 +15,12 @@ module Hancock::Pages
           field :render_file, type: Boolean, default: true
           embedded_in :blockset, inverse_of: :blocks, class_name: "Hancock::Pages::Blockset"
 
-          validates_inclusion_of :file_path, in: Settings.hancock_pages_blocks_whitelist.lines.map(&:strip).compact, allow_blank: true
-          # validates_inclusion_of :file_path, in: Hancock::Pages::Blockset.settings.blocks_whitelist.lines.map(&:strip).compact, allow_blank: true
+          validates_inclusion_of :file_path, in: proc {
+            Settings.hancock_pages_blocks_whitelist.lines.map(&:strip).compact
+          }, allow_blank: true
+          # validates_inclusion_of :file_path, in: proc {
+          #   Hancock::Pages::Blockset.settings.blocks_whitelist.lines.map(&:strip).compact
+          # }, allow_blank: true
 
           def self.find(id)
             find_through(Hancock::Pages::Blockset, 'blocks', id)
