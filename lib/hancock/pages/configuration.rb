@@ -20,6 +20,8 @@ module Hancock::Pages
     attr_accessor :user_abilities_support
     attr_accessor :ra_comments_support
 
+    attr_accessor :renderer_lib_extends
+
     def initialize
       @menu_max_depth = 2
 
@@ -34,6 +36,12 @@ module Hancock::Pages
       @model_settings_support = !!defined?(RailsAdminModelSettings)
       @user_abilities_support = !!defined?(RailsAdminUserAbilities)
       @ra_comments_support = !!defined?(RailsAdminComments)
+
+      @renderer_lib_extends = [
+        # ::ActionController::Base,
+        ::ActionView::Helpers::TagHelper,
+        ::ActionView::Context
+      ]
     end
   end
 end

@@ -127,8 +127,14 @@ module Hancock::Pages
         if view.is_a?(Hash)
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
-        [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
-          view.prepend lib_extends unless view.class < lib_extends
+        Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
+          unless view.class < lib_extends
+            if view.respond_to?(:prepend)
+              view.prepend lib_extends
+            else
+              view.extend lib_extends
+            end
+          end
         end
 
         ret = ""
@@ -172,8 +178,14 @@ module Hancock::Pages
         if view.is_a?(Hash)
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
-        [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
-          view.prepend lib_extends unless view.class < lib_extends
+        Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
+          unless view.class < lib_extends
+            if view.respond_to?(:prepend)
+              view.prepend lib_extends
+            else
+              view.extend lib_extends
+            end
+          end
         end
 
         ret = ""
