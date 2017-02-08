@@ -35,7 +35,7 @@ module Hancock::Pages
           view, content = view[:view] || Hancock::Pages::PagesController.new, view[:content]
         end
         [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
-          view.prepend lib_extends unless view < lib_extends
+          view.prepend lib_extends unless view.class < lib_extends
         end
 
         ret = content

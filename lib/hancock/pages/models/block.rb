@@ -128,7 +128,7 @@ module Hancock::Pages
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
         [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
-          view.prepend lib_extends unless view < lib_extends
+          view.prepend lib_extends unless view.class < lib_extends
         end
 
         ret = ""
@@ -173,7 +173,7 @@ module Hancock::Pages
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
         [::ActionView::Helpers::TagHelper, ::ActionView::Context].each do |lib_extends|
-          view.prepend lib_extends unless view < lib_extends
+          view.prepend lib_extends unless view.class < lib_extends
         end
 
         ret = ""
