@@ -19,4 +19,7 @@ Hancock::Pages.configure do |config|
   #   ::ActionView::Helpers::TagHelper,
   #   ::ActionView::Context
   # ]
+  #
+  # config.verbose_render = Rails.env.development? or Rails.env.test?
+  # config.raven_support = !!(Hancock.config.respond_to?(:raven_support) ? Hancock.config.raven_support : defined?(Raven))
 end

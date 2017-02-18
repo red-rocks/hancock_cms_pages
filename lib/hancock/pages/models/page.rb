@@ -84,7 +84,20 @@ module Hancock::Pages
               # excerpt.gsub(/\{\{(.*?)\}\}/) do
               _excerpt = excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
                 bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-                view.render_blockset(bs, called_from: :page_excerpt) rescue nil if bs
+                if bs
+                  begin
+                    view.render_blockset(bs, called_from: :page_excerpt)
+                  rescue Exception => exception
+                    if Hancock::Pages.config.verbose_render
+                      Rails.logger.error exception.message
+                      Rails.logger.error exception.backtrace.join("\n")
+                      puts exception.message
+                      puts exception.backtrace.join("\n")
+                    end
+                    Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                  end
+                end
+
               end.gsub(/\{\{self\.(.*?)\}\}/) do
                 if Hancock::Pages.config.insertions_support
                   get_insertion($1)
@@ -115,7 +128,20 @@ module Hancock::Pages
               # content.gsub(/\{\{(.*?)\}\}/) do
               _content = content.gsub(/\{\{BS\|(.*?)\}\}/) do
                 bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-                view.render_blockset(bs, called_from: :page_content) rescue nil if bs
+                if bs
+                  begin
+                    view.render_blockset(bs, called_from: :page_content)
+                  rescue Exception => exception
+                    if Hancock::Pages.config.verbose_render
+                      Rails.logger.error exception.message
+                      Rails.logger.error exception.backtrace.join("\n")
+                      puts exception.message
+                      puts exception.backtrace.join("\n")
+                    end
+                    Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                  end
+                end
+
               end.gsub(/\{\{self\.(.*?)\}\}/) do
                 if Hancock::Pages.config.insertions_support
                   get_insertion($1)

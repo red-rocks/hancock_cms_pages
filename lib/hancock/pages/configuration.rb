@@ -22,6 +22,9 @@ module Hancock::Pages
 
     attr_accessor :renderer_lib_extends
 
+    attr_accessor :verbose_render
+    attr_accessor :raven_support
+
     def initialize
       @menu_max_depth = 2
 
@@ -42,6 +45,9 @@ module Hancock::Pages
         ::ActionView::Helpers::TagHelper,
         ::ActionView::Context
       ]
+
+      @verbose_render = Rails.env.development? or Rails.env.test?
+      @raven_support = !!(Hancock.config.respond_to?(:raven_support) ? Hancock.config.raven_support : defined?(Raven))
     end
   end
 end

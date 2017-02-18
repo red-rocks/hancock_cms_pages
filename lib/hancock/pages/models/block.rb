@@ -146,21 +146,51 @@ module Hancock::Pages
         if self.render_file and !self.file_path.blank?
           opts.merge!(partial: self.file_path, locals: locals)
           # ret = view.render_to_string(opts) rescue self.content_html.html_safe
-          begin
-            ret = view.render_to_string(opts)
-            # ret = view.render(opts)
-          rescue Exception => ex
-            puts ex.message
-            puts ex.backtrace
+          ret = begin
+            view.render_to_string(opts)
+          rescue Exception => exception
+            if Hancock::Pages.config.verbose_render
+              Rails.logger.error exception.message
+              Rails.logger.error exception.backtrace.join("\n")
+              puts exception.message
+              puts exception.backtrace.join("\n")
+            end
+            Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+            self.content_html.html_safe
           end
         else
           opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content_html(false).gsub("{{FILE}}") do
-            view.render_to_string(opts) rescue nil
             # view.render(opts) rescue nil
+            begin
+              view.render(opts)
+            rescue Exception => exception
+              if Hancock::Pages.config.verbose_render
+                Rails.logger.error exception.message
+                Rails.logger.error exception.backtrace.join("\n")
+                puts exception.message
+                puts exception.backtrace.join("\n")
+              end
+              Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+              nil
+            end
           end.gsub(/\{\{BS\|(.*?)\}\}/) do
             bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-            view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
+            # view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
+            if bs
+              begin
+                view.render_blockset(bs, called_from: :render_or_content_html)
+              rescue Exception => exception
+                if Hancock::Pages.config.verbose_render
+                  Rails.logger.error exception.message
+                  Rails.logger.error exception.backtrace.join("\n")
+                  puts exception.message
+                  puts exception.backtrace.join("\n")
+                end
+                Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                nil
+              end
+            end
           end.html_safe
         end
         if use_wrapper
@@ -171,7 +201,8 @@ module Hancock::Pages
           ret = view.content_tag wrapper_tag, ret, _attrs
         end
         ret = yield ret if block_given?
-        return ret
+        return (ret.is_a?(Array) ? ret.join.html_safe : ret)
+        # return ret
       end
 
       def render_or_content(view = Hancock::Pages::PagesController.new, opts = {})
@@ -196,20 +227,60 @@ module Hancock::Pages
 
         unless self.file_path.blank?
           opts.merge!(partial: self.file_path, locals: locals)
-          ret = view.render_to_string(opts) rescue self.content
+
+          # ret = view.render_to_string(opts) rescue self.content
+          ret = begin
+            view.render_to_string(opts)
+          rescue Exception => exception
+            if Hancock::Pages.config.verbose_render
+              Rails.logger.error exception.message
+              Rails.logger.error exception.backtrace.join("\n")
+              puts exception.message
+              puts exception.backtrace.join("\n")
+            end
+            Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+            self.content
+          end
           # ret = view.render(opts) rescue self.content
         else
           opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content(false).gsub("{{FILE}}") do
-            view.render_to_string(opts) rescue nil
+            # view.render_to_string(opts) rescue nil
+            begin
+              view.render_to_string(opts)
+            rescue Exception => exception
+              if Hancock::Pages.config.verbose_render
+                Rails.logger.error exception.message
+                Rails.logger.error exception.backtrace.join("\n")
+                puts exception.message
+                puts exception.backtrace.join("\n")
+              end
+              Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+              nil
+            end
             # view.render(opts) rescue nil
           end.gsub(/\{\{BS\|(.*?)\}\}/) do
             bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
-            view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
+            # view.render_blockset(bs, called_from: :render_or_content) rescue nil if bs
+            if bs
+              begin
+                view.render_blockset(bs, called_from: :render_or_content)
+              rescue Exception => exception
+                if Hancock::Pages.config.verbose_render
+                  Rails.logger.error exception.message
+                  Rails.logger.error exception.backtrace.join("\n")
+                  puts exception.message
+                  puts exception.backtrace.join("\n")
+                end
+                Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                nil
+              end
+            end
           end
         end
         ret = yield ret if block_given?
-        return ret
+        return (ret.is_a?(Array) ? ret.join.html_safe : ret)
+        # return ret
       end
 
       def file_fullpath(with_ext = false, ext = ".html.slim")

@@ -31,7 +31,7 @@ module Hancock::Pages::Localizeable
         Rails.logger.error exception.backtrace.join("\n")
         puts exception.message
         puts exception.backtrace.join("\n")
-        capture_exception(exception) if respond_to?(:capture_exception)
+        Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
 
         _url = item.redirect.blank? ? item.fullpath : item.redirect
       end

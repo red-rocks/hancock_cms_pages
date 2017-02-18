@@ -22,7 +22,7 @@ module Hancock::Pages::Blocksetable
         Rails.logger.error exception.backtrace.join("\n")
         puts exception.message
         puts exception.backtrace.join("\n")
-        capture_exception(exception) if respond_to?(:capture_exception)
+        Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
         items || []
       end
     end
@@ -57,10 +57,10 @@ module Hancock::Pages::Blocksetable
       Rails.logger.error exception.backtrace.join("\n")
       puts exception.message
       puts exception.backtrace.join("\n")
-      capture_exception(exception) if respond_to?(:capture_exception)
+      Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
       # ret << blocks || []
     end
-    ret.is_a?(Array) ? ret.join.html_safe : ret
+    return (ret.is_a?(Array) ? ret.join.html_safe : ret)
   end
 
   private

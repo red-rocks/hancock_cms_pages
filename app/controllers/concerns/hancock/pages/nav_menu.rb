@@ -45,7 +45,7 @@ module Hancock::Pages::NavMenu
         Rails.logger.error exception.backtrace.join("\n")
         puts exception.message
         puts exception.backtrace.join("\n")
-        capture_exception(exception) if respond_to?(:capture_exception)
+        Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
         items || []
       end
     end
@@ -63,7 +63,7 @@ module Hancock::Pages::NavMenu
         Rails.logger.error exception.backtrace.join("\n")
         puts exception.message
         puts exception.backtrace.join("\n")
-        capture_exception(exception) if respond_to?(:capture_exception)
+        Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
 
         item.redirect.blank? ? item.fullpath : item.redirect
       end
