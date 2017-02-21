@@ -28,7 +28,7 @@ module Hancock::Pages::Blocksetable
     end
   end
 
-  def render_blockset(*opts)
+  def render_blockset(*opts, &block)
     if opts.length == 1 and opts[0].is_a?(Hash)
       type = opts.delete[:type]
     else
@@ -41,16 +41,31 @@ module Hancock::Pages::Blocksetable
       end
     end
     ret = []
+    need_render_blockset = true
     begin
       blockset = get_blockset(type)
-      blocks = blockset_get_blocks_for_render(blockset)
-      blocks.each do |block|
-        ret << block.render_or_content_html(self, opts) do |html|
-          after_render_blockset_block block, html
-        end
+      if block_given? and (blockset.new_record? or opts[:overwrite])
+
+        # include ::Hancock::Pages::BlocksetsHelper
+
+        need_render_blockset = false
+        blockset.blocks.delete_all if opts[:overwrite]
+        _block = blockset.blocks.new
+        _block.content_html = helpers.capture(&block) if block
+        # _block.content_html = helpers.capture_block(&block)
+        _block.render_file = false
+        _block.save
       end
-      ret = blockset.render(self, ret.join.html_safe) do |html|
-        after_render_blockset blockset, html
+      if need_render_blockset
+        blocks = blockset_get_blocks_for_render(blockset)
+        blocks.each do |block|
+          ret << block.render_or_content_html(self, opts) do |html|
+            after_render_blockset_block block, html
+          end
+        end
+        ret = blockset.render(self, ret.join.html_safe) do |html|
+          after_render_blockset blockset, html
+        end
       end
     rescue Exception => exception
       Rails.logger.error exception.message
@@ -73,7 +88,15 @@ module Hancock::Pages::Blocksetable
   end
 
   def get_blockset(type)
-    type.is_a?(Hancock::Pages::Blockset) ? type : blockset_class.find(type.to_s)
+    if type.is_a?(blockset_class)
+      type
+    else
+      begin
+        blockset_class.find(type.to_s)
+      rescue
+        blockset_class.new(name: type.to_s, text_slug: type.to_s)
+      end
+    end
   end
 
   def blockset_get_blocks(type)
@@ -90,7 +113,7 @@ module Hancock::Pages::Blocksetable
     "Hancock::Pages::Blockset"
   end
   def blockset_class
-    blockset_class_name.constantize
+    @blockset_class ||= blockset_class_name.constantize
   end
 
   def blockset_navigation_item(primary, item, block=nil)

@@ -90,7 +90,7 @@ module Hancock::Pages::SeoPages
     "Hancock::Pages::Page"
   end
   def page_class
-    page_class_name.constantize
+    @page_class ||= page_class_name.constantize
   end
 
   def rails_admin?

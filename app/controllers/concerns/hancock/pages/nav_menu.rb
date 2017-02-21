@@ -72,7 +72,12 @@ module Hancock::Pages::NavMenu
     end
   end
   def nav_get_menu_items(type)
-    menu = menu_class.find(type.to_s)
+    if type.is_a?(blockset_class)
+      type
+    else
+      menu = menu_class.find(type.to_s) rescue menu_class.create(name: type.to_s, text_slug: type.to_s)
+    end
+
     menu.pages.enabled.sorted.to_a if menu
   end
   def nav_extra_data_before(type, primary)
@@ -86,6 +91,6 @@ module Hancock::Pages::NavMenu
     "Hancock::Pages::Menu"
   end
   def menu_class
-    menu_class_name.constantize
+    @menu_class ||= menu_class_name.constantize
   end
 end

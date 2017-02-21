@@ -54,13 +54,13 @@ module Hancock::Pages::Localizeable
     "Hancock::Pages::Page"
   end
   def page_class
-    page_class_name.constantize
+    @page_class ||= page_class_name.constantize
   end
 
   def menu_class_name
     "Hancock::Pages::Menu"
   end
   def menu_class
-    menu_class_name.constantize
+    @menu_class ||= menu_class_name.constantize
   end
 end
