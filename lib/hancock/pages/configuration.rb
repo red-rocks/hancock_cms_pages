@@ -30,7 +30,7 @@ module Hancock::Pages
 
       @seo_support        = !!defined? Hancock::Seo
       @cache_support      = !!defined?(Hancock::Cache)
-      @insertions_support = true
+      @insertions_support = !!defined?(Hancock::InsertionField)
 
       @localize   = Hancock.config.localize
 

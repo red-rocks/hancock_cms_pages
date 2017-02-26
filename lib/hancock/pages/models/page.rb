@@ -14,7 +14,7 @@ module Hancock::Pages
         include Hancock::Cache::Cacheable
       end
       if Hancock::Pages.config.insertions_support
-        include Hancock::Insertions
+        include Hancock::InsertionField
       end
 
       include Hancock::Pages.orm_specific('Page')

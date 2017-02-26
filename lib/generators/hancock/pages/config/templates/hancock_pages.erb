@@ -4,7 +4,7 @@ Hancock::Pages.configure do |config|
   #
   # config.seo_support = !!defined? Hancock::Seo
   # config.cache_support  = !!defined?(Hancock::Cache)
-  # config.insertions_support = true
+  # config.insertions_support = !!defined?(Hancock::InsertionField) # or false
   #
   # config.localize = Hancock.config.localize
   #

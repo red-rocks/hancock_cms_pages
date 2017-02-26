@@ -7,7 +7,7 @@ module Hancock::Pages
       include ManualSlug
 
       if Hancock::Pages.config.insertions_support
-        include Hancock::Insertions
+        include Hancock::InsertionField
       end
 
       include Hancock::Pages.orm_specific('Block')
