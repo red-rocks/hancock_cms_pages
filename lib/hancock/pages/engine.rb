@@ -48,7 +48,6 @@ module Hancock::Pages
     # end
 
     config.after_initialize do
-      puts 'Hancock::Pages after_initialize'
       # Write default email settings to DB so they can be changed.
       begin
         if Settings and Settings.table_exists?
