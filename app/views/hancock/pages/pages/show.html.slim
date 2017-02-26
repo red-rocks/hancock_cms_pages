@@ -1,4 +1,4 @@
-- _cache_helper = (Hancock::News.config.cache_support ? :hancock_cache : :cache)
+- _cache_helper = (Hancock::Pages.config.cache_support ? :hancock_cache : :cache)
 - _partial_path = (Hancock::Pages.config.seo_support ? 'shared/obj_with_seo' : 'shared/obj')
 
 - send _cache_helper, @seo_page do
