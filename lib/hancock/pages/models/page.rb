@@ -72,6 +72,10 @@ module Hancock::Pages
           ret.freeze
         end
 
+        if Hancock::Pages.config.insertions_support
+          insertions_for(:excerpt_html)
+          insertions_for(:content_html)
+        end
         def page_excerpt(view = Hancock::Pages::PagesController.new)
           if @excerpt_used.nil?
             if excerpt.nil?
@@ -98,14 +102,16 @@ module Hancock::Pages
                   end
                 end
 
-              end.gsub(/\{\{self\.(.*?)\}\}/) do
+              end.gsub(/(\{\{self\.(.*?)\}\})/) do
                 if Hancock::Pages.config.insertions_support
-                  get_insertion($1)
+                  get_insertion($2)
                 else
-                  $0
+                  $1
                 end
               end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
                 (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+              # end.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
+              #   $2
               end
               @excerpt_used = true
               _excerpt
@@ -142,14 +148,16 @@ module Hancock::Pages
                   end
                 end
 
-              end.gsub(/\{\{self\.(.*?)\}\}/) do
+              end.gsub(/(\{\{self\.(.*?)\}\})/) do
                 if Hancock::Pages.config.insertions_support
-                  get_insertion($1)
+                  get_insertion($2)
                 else
-                  $0
+                  $1
                 end
               end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
                 (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+              # end.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
+              #   $2
               end
             end
             @content_used = true

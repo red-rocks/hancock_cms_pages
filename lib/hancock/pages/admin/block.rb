@@ -73,6 +73,10 @@ module Hancock::Pages
           # field :content_html, :ck_editor
           # field :content_clear, :toggle
 
+          if Hancock::Pages.config.insertions_support
+            group :insertions, &Hancock::Admin.insertions_block
+          end
+
           Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)
 
           # field :blocksets do

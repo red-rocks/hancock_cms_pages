@@ -107,6 +107,10 @@ module Hancock::Pages
             if Hancock::Pages.config.cache_support
               group :caching, &Hancock::Cache::Admin.caching_block
             end
+
+            if Hancock::Pages.config.insertions_support
+              group :insertions, &Hancock::Admin.insertions_block
+            end
           end
 
           nested_set({

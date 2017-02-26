@@ -42,21 +42,21 @@ module Hancock::Pages
               ''
             else
               # content.gsub(/\{\{(.*?)\}\}/) do
-              _content = content.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-                if $3 == "FILE" and $2.blank?
-                  clear_insertions ? "" : $0
-                elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
-                  clear_insertions ? "" : $0
-                elsif $2 == "self" and !$3.blank?
+              _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
+                if $4 == "FILE" and $3.blank?
+                  clear_insertions ? "" : $1
+                elsif $4 =~ /\ABS\|(.*?)\Z/ and $3.blank?
+                  clear_insertions ? "" : $1
+                elsif $3 == "self" and !$4.blank?
                   if clear_insertions
                     ""
                   elsif Hancock::Pages.config.insertions_support
-                    get_insertion($3)
+                    get_insertion($4)
                   else
-                    $0
+                    $1
                   end
                 else
-                  (Settings and !$3.blank? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+                  (Settings and !$4.blank? and $3 != "self") ? Settings.ns($3).get($4).val : "" #temp
                 end
               end
               @content_used = true
@@ -76,21 +76,21 @@ module Hancock::Pages
               ''
             else
               # content.gsub(/\{\{(.*?)\}\}/) do
-              _content_html = content_html.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-                if $3 == "FILE" and $2.blank?
-                  clear_insertions ? "" : $0
-                elsif $3 =~ /\ABS\|(.*?)\Z/ and $2.blank?
-                  clear_insertions ? "" : $0
-                elsif $2 == "self" and !$3.blank?
+              _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
+                if $4 == "FILE" and $3.blank?
+                  clear_insertions ? "" : $1
+                elsif $4 =~ /\ABS\|(.*?)\Z/ and $3.blank?
+                  clear_insertions ? "" : $1
+                elsif $3 == "self" and !$4.blank?
                   if clear_insertions
                     ""
                   elsif Hancock::Pages.config.insertions_support
-                    get_insertion($3)
+                    get_insertion($4)
                   else
-                    $0
+                    $1
                   end
                 else
-                  (Settings and !$3.blank? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+                  (Settings and !$4.blank? and $3 != "self") ? Settings.ns($3).get($4).val : "" #temp
                 end
               end
               @content_html_used = true
