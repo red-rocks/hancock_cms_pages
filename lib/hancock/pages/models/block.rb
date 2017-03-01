@@ -42,6 +42,10 @@ module Hancock::Pages
               ''
             else
               # content.gsub(/\{\{(.*?)\}\}/) do
+              # {{"some_text"}} #temporary disabled - need tests
+              # _content = content.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
+              #   $2
+              # end.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
               _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
                 if $4 == "FILE" and $3.blank?
                   clear_insertions ? "" : $1
@@ -76,6 +80,10 @@ module Hancock::Pages
               ''
             else
               # content.gsub(/\{\{(.*?)\}\}/) do
+              # {{"some_text"}} #temporary disabled - need tests
+              # _content = content.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
+              #   $2
+              # end.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
               _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
                 if $4 == "FILE" and $3.blank?
                   clear_insertions ? "" : $1

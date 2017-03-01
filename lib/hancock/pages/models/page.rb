@@ -102,16 +102,22 @@ module Hancock::Pages
                   end
                 end
 
+              # {{self.%insertion%}}
               end.gsub(/(\{\{self\.(.*?)\}\})/) do
                 if Hancock::Pages.config.insertions_support
                   get_insertion($2)
                 else
                   $1
                 end
+
+              # {{"some_text"}} #temporary disabled - need tests
+              # {{"some_text"}}
+              # end.gsub(/\{\{(\'|\"|&quot;|&#39;)(.*?)(\1)\}\}/) do
+              #   $2
+
+              # {{%ns%.%key%}}
               end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
                 (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
-              # end.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
-              #   $2
               end
               @excerpt_used = true
               _excerpt
@@ -148,16 +154,22 @@ module Hancock::Pages
                   end
                 end
 
+              # {{self.%insertion%}}
               end.gsub(/(\{\{self\.(.*?)\}\})/) do
                 if Hancock::Pages.config.insertions_support
                   get_insertion($2)
                 else
                   $1
                 end
-              end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-                (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+
+              # {{"some_text"}} #temporary disabled - need tests
               # end.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
+              # end.gsub(/\{\{(\'|\"|&quot;|&#39;)(.*?)(\1)\}\}/) do
               #   $2
+
+              # {{%ns%.%key%}}
+              end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
+                ((Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "") rescue "" #temp
               end
             end
             @content_used = true

@@ -42,7 +42,8 @@ module Hancock::Pages
               queryable true
             end
 
-            group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
+            # group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
+            group :content, &Hancock::Admin.content_block(excerpt: false)
             if Hancock::Pages.config.cache_support
               group :caching, &Hancock::Cache::Admin.caching_block
             end
@@ -55,7 +56,8 @@ module Hancock::Pages
               read_only true
             end
 
-            group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
+            # group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
+            group :content, &Hancock::Admin.content_block(excerpt: false)
             # group :content do
             #   active false
             #   field :excerpt, :hancock_html
