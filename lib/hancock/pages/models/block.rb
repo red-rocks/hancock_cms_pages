@@ -81,10 +81,10 @@ module Hancock::Pages
             else
               # content.gsub(/\{\{(.*?)\}\}/) do
               # {{"some_text"}} #temporary disabled - need tests
-              # _content = content.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
+              # _content_html = content_html.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
               #   $2
               # end.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
-              _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
+              _content_html = content_html.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
                 if $4 == "FILE" and $3.blank?
                   clear_insertions ? "" : $1
                 elsif $4 =~ /\ABS\|(.*?)\Z/ and $3.blank?
