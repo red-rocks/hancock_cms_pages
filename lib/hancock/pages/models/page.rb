@@ -40,36 +40,10 @@ module Hancock::Pages
           belongs_to :hancock_connectable, polymorphic: true, optional: true
         end
 
-        def self.goto_hancock
-          self.where(hancock_connectable_type: /^Enjoy/).all.map { |s|
-            s.hancock_connectable_type = s.hancock_connectable_type.sub("Enjoy", "Hancock");
-            s.save
-          }
-        end
-
         before_save do
           self.hancock_connectable_id = nil   if self.hancock_connectable_id.nil?
           self.hancock_connectable_type = nil if self.hancock_connectable_type.nil?
           self
-        end
-
-        def self.manager_can_add_actions
-          ret = [:nested_set]
-          # ret += [:multiple_file_upload, :sort_embedded] if Hancock::Pages.mongoid?
-          ret << :model_settings if Hancock::Pages.config.model_settings_support
-          # ret << :model_accesses if Hancock::Pages.config.user_abilities_support
-          ret << :hancock_touch if Hancock::Pages.config.cache_support
-          ret += [:comments, :model_comments] if Hancock::Pages.config.ra_comments_support
-          ret.freeze
-        end
-        def self.rails_admin_add_visible_actions
-          ret = [:nested_set]
-          # ret += [:multiple_file_upload, :sort_embedded] if Hancock::Pages.mongoid?
-          ret << :model_settings if Hancock::Pages.config.model_settings_support
-          ret << :model_accesses if Hancock::Pages.config.user_abilities_support
-          ret << :hancock_touch if Hancock::Pages.config.cache_support
-          ret += [:comments, :model_comments] if Hancock::Pages.config.ra_comments_support
-          ret.freeze
         end
 
         if Hancock::Pages.config.insertions_support
@@ -178,80 +152,112 @@ module Hancock::Pages
             ''
           end
         end
-      end
 
-      def page_h1
-        _ret = seo ? seo.h1 : nil
-        _ret = name   if _ret.blank?
-        _ret = title  if _ret.blank?
-        _ret
-      end
-
-      def get_fullpath
-        redirect.blank? ? fullpath : redirect
-      end
-
-      def has_excerpt?
-        @excerpt_used.nil? && !excerpt.blank?
-      end
-
-
-      def has_content?
-        @content_used.nil? && !content.blank?
-      end
-
-      def is_current?(url)
-        if fullpath == '/'
-          url == '/'
-        else
-          url.match(clean_regexp)
+        def page_h1
+          _ret = seo ? seo.h1 : nil
+          _ret = name   if _ret.blank?
+          _ret = title  if _ret.blank?
+          _ret
         end
-      end
 
-      def regexp_prefix
-        Hancock::Pages.config.localize ? "(?:#{I18n.available_locales.map { |l| "\\/#{l}"}.join("|")})?" : ""
-      end
+        def get_fullpath
+          redirect.blank? ? fullpath : redirect
+        end
 
-      def clean_regexp
-        if regexp.blank?
-          /^#{regexp_prefix}#{Regexp.escape(fullpath)}$/
-        else
-          begin
-            /#{regexp}/
-          rescue
-            # not a valid regexp - treat as literal search string
-            /#{Regexp.escape(regexp)}/
+        def has_excerpt?
+          @excerpt_used.nil? && !excerpt.blank?
+        end
+
+
+        def has_content?
+          @content_used.nil? && !content.blank?
+        end
+
+        def is_current?(url)
+          if fullpath == '/'
+            url == '/'
+          else
+            url.match(clean_regexp)
           end
         end
-      end
 
-      def nav_options
-        nav_options_default.merge(nav_options_additions)
-      end
+        def regexp_prefix
+          Hancock::Pages.config.localize ? "(?:#{I18n.available_locales.map { |l| "\\/#{l}"}.join("|")})?" : ""
+        end
 
-      def nav_options_default
-        {highlights_on: clean_regexp}
-      end
-
-      def nav_options_additions
-        {}
-      end
-
-      def wrapper_attributes=(val)
-        if val.is_a? (String)
-          begin
+        def clean_regexp
+          if regexp.blank?
+            /^#{regexp_prefix}#{Regexp.escape(fullpath)}$/
+          else
             begin
-              self[:wrapper_attributes] = JSON.parse(val)
+              /#{regexp}/
             rescue
-              self[:wrapper_attributes] = YAML.load(val)
+              # not a valid regexp - treat as literal search string
+              /#{Regexp.escape(regexp)}/
             end
-          rescue
           end
-        elsif val.is_a?(Hash)
-          self[:wrapper_attributes] = val
-        else
-          self[:wrapper_attributes] = wrapper_attributes
         end
+
+        def nav_options
+          nav_options_default.merge(nav_options_additions)
+        end
+
+        def nav_options_default
+          {highlights_on: clean_regexp}
+        end
+
+        def nav_options_additions
+          {}
+        end
+
+        def wrapper_attributes=(val)
+          if val.is_a? (String)
+            begin
+              begin
+                self[:wrapper_attributes] = JSON.parse(val)
+              rescue
+                self[:wrapper_attributes] = YAML.load(val)
+              end
+            rescue
+            end
+          elsif val.is_a?(Hash)
+            self[:wrapper_attributes] = val
+          else
+            self[:wrapper_attributes] = wrapper_attributes
+          end
+        end
+
+      end
+
+
+      class_methods do
+
+        def goto_hancock
+          self.where(hancock_connectable_type: /^Enjoy/).all.map { |s|
+            s.hancock_connectable_type = s.hancock_connectable_type.sub("Enjoy", "Hancock");
+            s.save
+          }
+        end
+
+        def manager_can_add_actions
+          ret = [:nested_set]
+          # ret += [:multiple_file_upload, :sort_embedded] if Hancock::Pages.mongoid?
+          ret << :model_settings if Hancock::Pages.config.model_settings_support
+          # ret << :model_accesses if Hancock::Pages.config.user_abilities_support
+          ret << :hancock_touch if Hancock::Pages.config.cache_support
+          ret += [:comments, :model_comments] if Hancock::Pages.config.ra_comments_support
+          ret.freeze
+        end
+        def rails_admin_add_visible_actions
+          ret = [:nested_set]
+          # ret += [:multiple_file_upload, :sort_embedded] if Hancock::Pages.mongoid?
+          ret << :model_settings if Hancock::Pages.config.model_settings_support
+          ret << :model_accesses if Hancock::Pages.config.user_abilities_support
+          ret << :hancock_touch if Hancock::Pages.config.cache_support
+          ret += [:comments, :model_comments] if Hancock::Pages.config.ra_comments_support
+          ret.freeze
+        end
+
       end
 
     end

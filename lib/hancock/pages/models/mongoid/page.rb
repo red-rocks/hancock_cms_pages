@@ -48,6 +48,7 @@ module Hancock::Pages
           scope :sorted, -> { order_by([:lft, :asc]) }
           scope :menu, ->(menu_id) { enabled.sorted.where(menu_ids: menu_id) }
         end
+        
       end
     end
   end

@@ -12,6 +12,7 @@ module Hancock::Pages
 
           field :name, type: String, default: "", overwrite: true
         end
+        
       end
     end
   end

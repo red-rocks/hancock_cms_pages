@@ -18,6 +18,7 @@ module Hancock::Pages
           field :wrapper_id, type: String, default: ""
           field :wrapper_attributes, type: Hash, default: {}
         end
+        
       end
     end
   end
