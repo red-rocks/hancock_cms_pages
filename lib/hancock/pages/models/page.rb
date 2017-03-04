@@ -64,7 +64,7 @@ module Hancock::Pages
                 bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
                 if bs
                   begin
-                    view.render_blockset(bs, called_from: :page_excerpt)
+                    view.render_blockset(bs, called_from: {object: self, nethod: :page_excerpt})
                   rescue Exception => exception
                     if Hancock::Pages.config.verbose_render
                       Rails.logger.error exception.message
@@ -116,7 +116,7 @@ module Hancock::Pages
                 bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
                 if bs
                   begin
-                    view.render_blockset(bs, called_from: :page_content)
+                    view.render_blockset(bs, called_from: {object: self, nethod: :page_content})
                   rescue Exception => exception
                     if Hancock::Pages.config.verbose_render
                       Rails.logger.error exception.message

@@ -10,6 +10,7 @@ module Hancock::Pages
 
         Proc.new {
           navigation_label(!nav_label.blank? ? nav_label : I18n.t('hancock.pages'))
+          object_label_method :rails_admin_label
 
           field :enabled, :toggle do
             searchable false
@@ -38,16 +39,7 @@ module Hancock::Pages
           # end
           field :file_path, :enum do
             enum do
-              _files = Settings.hancock_pages_blocks_whitelist.lines.map(&:strip)
-              # _files = Hancock::Pages::Blockset.settings.blocks_whitelist.lines.map(&:strip)
-
-              # _names = Settings.hancock_pages_blocks_human_names.select { |f| _files.include? f }
-              # _names.each_pair { |k, v| _names[k] = "#{k} (#{v})" }
-              # _names.invert
-
-              _names = Settings.hancock_pages_blocks_human_names
-              # _names = Hancock::Pages::Blockset.settings.blocks_human_names
-              _files.map { |f| _names[f] ? ["#{_names[f]} (#{f})", f] : [f] }
+              Hancock::Pages.whitelist_enum
             end
             multiple false
             searchable true

@@ -124,6 +124,21 @@ module Hancock::Pages
         self.file_pathname_for_fs.to_s
       end
 
+      def rails_admin_label
+        if !self.name.blank?
+          self.name
+        elsif self.render_file and !self.file_path.blank?
+          _human_name = Hancock::Pages.whitelist_human_names[self.file_path]
+          if _human_name.blank?
+            self.file_path_for_fs
+          else
+            _human_name
+          end
+        else
+          self.id
+        end
+      end
+
       def has_content?
         @content_used.nil? && !content.blank?
       end
@@ -146,7 +161,7 @@ module Hancock::Pages
         end
 
         ret = ""
-        hancock_env = {block: self, called_from: [:render_or_content_html]}
+        hancock_env = {block: self, called_from: [{object: self, nethod: :render_or_content_html}]}
         hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
         locals = {}
         locals[:hancock_env] = hancock_env
@@ -187,7 +202,7 @@ module Hancock::Pages
             # view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
             if bs
               begin
-                view.render_blockset(bs, called_from: :render_or_content_html)
+                view.render_blockset(bs, called_from: {object: self, nethod: :render_or_content_html})
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -228,7 +243,7 @@ module Hancock::Pages
         end
 
         ret = ""
-        hancock_env = {block: self, called_from: [:render_or_content]}
+        hancock_env = {block: self, called_from: [{object: self, nethod: :render_or_content}]}
         hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
         locals = {}
         locals[:hancock_env] = hancock_env
@@ -272,7 +287,7 @@ module Hancock::Pages
             # view.render_blockset(bs, called_from: :render_or_content) rescue nil if bs
             if bs
               begin
-                view.render_blockset(bs, called_from: :render_or_content)
+                view.render_blockset(bs, called_from: {object: self, nethod: :render_or_content})
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message

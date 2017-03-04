@@ -53,6 +53,8 @@ module Hancock::Pages
         if Settings and Settings.table_exists?
           Settings.hancock_pages_blocks_whitelist(default: '', kind: :text, label: 'Белый список блоков') unless RailsAdminSettings::Setting.ns("main").where(key: "hancock_pages_blocks_whitelist").exists?
           Settings.hancock_pages_blocks_human_names(default: '', kind: :yaml, label: 'Имена блоков') unless RailsAdminSettings::Setting.ns("main").where(key: "hancock_pages_blocks_human_names").exists?
+
+          Settings.ns('admin').hancock_pages_blocks_blacklist(default: '', kind: :text, label: 'Черный список блоков') unless RailsAdminSettings::Setting.ns("admin").where(key: "hancock_pages_blocks_blacklist").exists?
         end
       rescue
       end

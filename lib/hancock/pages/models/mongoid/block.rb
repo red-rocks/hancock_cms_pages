@@ -16,7 +16,9 @@ module Hancock::Pages
           embedded_in :blockset, inverse_of: :blocks, class_name: "Hancock::Pages::Blockset"
 
           validates_inclusion_of :file_path, in: proc {
-            Settings.hancock_pages_blocks_whitelist.lines.map(&:strip).compact
+            # Settings.hancock_pages_blocks_whitelist.lines.map(&:strip).compact
+            # Hancock::Pages.whitelist_as_array.compact
+            (Hancock::Pages.whitelist_as_array - Hancock::Pages.blacklist_as_array).compact
           }, allow_blank: true
           # validates_inclusion_of :file_path, in: proc {
           #   Hancock::Pages::Blockset.settings.blocks_whitelist.lines.map(&:strip).compact

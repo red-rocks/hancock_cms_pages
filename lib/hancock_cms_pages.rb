@@ -2,6 +2,8 @@ require "hancock/pages/version"
 require 'hancock/pages/engine'
 require 'hancock/pages/configuration'
 
+require "hancock/pages/views_whitelist"
+
 require "hancock/pages/routes"
 
 require 'hancock/pages/rails_admin_ext/hancock_connectable'
@@ -11,6 +13,8 @@ require 'simple-navigation'
 
 module Hancock::Pages
   include Hancock::Plugin
+
+  include Hancock::Pages::ViewsWhitelist
 
   autoload :Admin, 'hancock/pages/admin'
   module Admin
