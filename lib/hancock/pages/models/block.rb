@@ -26,6 +26,10 @@ module Hancock::Pages
           self.file_pathname = Pathname.new(file_path) unless file_path.nil?
         end
 
+        def can_render?
+          Hancock::Pages::can_render_in_block(self.file_path)
+        end
+
         if Hancock::Pages.config.insertions_support
           # insertions_for(:content)
           insertions_for(:content_html)
@@ -170,7 +174,7 @@ module Hancock::Pages
           opts.merge!(partial: self.file_path, locals: locals)
           # ret = view.render_to_string(opts) rescue self.content_html.html_safe
           ret = begin
-            view.render_to_string(opts)
+            view.render_to_string(opts) if can_render?
           rescue Exception => exception
             if Hancock::Pages.config.verbose_render
               Rails.logger.error exception.message
@@ -186,7 +190,7 @@ module Hancock::Pages
           ret = self.block_content_html(false).gsub("{{FILE}}") do
             # view.render(opts) rescue nil
             begin
-              view.render(opts)
+              view.render(opts) if can_render?
             rescue Exception => exception
               if Hancock::Pages.config.verbose_render
                 Rails.logger.error exception.message
@@ -253,7 +257,7 @@ module Hancock::Pages
 
           # ret = view.render_to_string(opts) rescue self.content
           ret = begin
-            view.render_to_string(opts)
+            view.render_to_string(opts) if can_render?
           rescue Exception => exception
             if Hancock::Pages.config.verbose_render
               Rails.logger.error exception.message
@@ -270,7 +274,7 @@ module Hancock::Pages
           ret = self.block_content(false).gsub("{{FILE}}") do
             # view.render_to_string(opts) rescue nil
             begin
-              view.render_to_string(opts)
+              view.render_to_string(opts) if can_render?
             rescue Exception => exception
               if Hancock::Pages.config.verbose_render
                 Rails.logger.error exception.message
