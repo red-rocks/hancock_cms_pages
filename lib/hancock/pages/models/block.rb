@@ -27,7 +27,7 @@ module Hancock::Pages
         end
 
         def can_render?
-          Hancock::Pages::can_render_in_block(self.file_path)
+          Hancock::Pages::can_render_in_block?(self.file_path)
         end
 
         if Hancock::Pages.config.insertions_support
