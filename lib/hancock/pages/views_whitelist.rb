@@ -18,10 +18,10 @@ module Hancock::Pages::ViewsWhitelist
       end
 
       def blacklist
-        Settings.hancock_pages_blocks_blacklist
+        Settings.ns('admin').hancock_pages_blocks_blacklist
       end
       def blacklist_obj
-        Settings.getnc(:hancock_pages_blocks_blacklist)
+        Settings.ns('admin').getnc(:hancock_pages_blocks_blacklist)
       end
       def blacklist_as_array
         blacklist.lines.map(&:strip).uniq
