@@ -39,7 +39,7 @@ module Hancock::Pages
           # end
           field :file_path, :enum do
             enum do
-              Hancock::Pages.whitelist_enum
+              Hancock::Pages.whitelist_enum || []
             end
             multiple false
             searchable true

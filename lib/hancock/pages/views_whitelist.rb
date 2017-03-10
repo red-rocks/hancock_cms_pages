@@ -51,8 +51,8 @@ module Hancock::Pages::ViewsWhitelist
 
       def whitelist_enum
         # whitelist_as_array.map do |f|
-        [whitelist_as_array - blacklist_as_array].uniq.map do |f|
-          whitelist_human_names[f] ? ["#{whitelist_human_names[f]} (#{f})", f] : [f]
+        (whitelist_as_array - blacklist_as_array).uniq.map do |f|
+          whitelist_human_names[f] ? ["#{whitelist_human_names[f]} (#{f})", f] : f
         end
       end
 

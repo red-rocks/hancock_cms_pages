@@ -25,16 +25,26 @@ module Hancock::Pages
             active false
             field :blocks do
               eager_load(false) rescue nil
-              searchable true
-              searchable_columns do
+              queryable true
+              searchable  do
                 [
-                  { column: "#{abstract_model.table_name}.blocks.name",   type: :string },
-                  { column: "#{abstract_model.table_name}.blocks.menu_link_content",  type: :string },
-                  { column: "#{abstract_model.table_name}.blocks.pageblock_selector",  type: :string },
-                  { column: "#{abstract_model.table_name}.blocks.file_path",  type: :string },
-                  { column: "#{abstract_model.table_name}.blocks.content_html",  type: :string }
+                  {blocks: :_id},
+                  {blocks: :name},
+                  {blocks: :menu_link_content},
+                  {blocks: :pageblock_selector},
+                  {blocks: :file_path},
+                  {blocks: :content_html}
                 ]
               end
+              # searchable_columns do
+              #   [
+              #     { column: "#{abstract_model.table_name}.blocks.name",   type: :string },
+              #     { column: "#{abstract_model.table_name}.blocks.menu_link_content",  type: :string },
+              #     { column: "#{abstract_model.table_name}.blocks.pageblock_selector",  type: :string },
+              #     { column: "#{abstract_model.table_name}.blocks.file_path",  type: :string },
+              #     { column: "#{abstract_model.table_name}.blocks.content_html",  type: :string }
+              #   ]
+              # end
             end
           end
 
