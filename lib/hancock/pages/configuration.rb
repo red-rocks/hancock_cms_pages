@@ -25,6 +25,8 @@ module Hancock::Pages
     attr_accessor :verbose_render
     attr_accessor :raven_support
 
+    attr_accessor :available_layouts
+
     def initialize
       @menu_max_depth = 2
 
@@ -48,6 +50,9 @@ module Hancock::Pages
 
       @verbose_render = Rails.env.development? or Rails.env.test?
       @raven_support = !!(Hancock.config.respond_to?(:raven_support) ? Hancock.config.raven_support : defined?(Raven))
+
+      @available_layouts = ["application"]
+
     end
   end
 end

@@ -52,6 +52,11 @@ module Hancock::Pages
           edit do
             field :enabled, :toggle
             field :name
+            field :layout_name, :enum do
+              enum do
+                ::Hancock::Pages.config.available_layouts
+              end
+            end
             field :hancock_connectable do
               read_only true
             end

@@ -13,18 +13,18 @@ module RailsAdmin
             obj = bindings[:object]
             ret = []
             cache_opts = {}
-            unless Hancock::Pages.config.cache_support
+            unless ::Hancock::Pages.config.cache_support
               cache_opts = {expires_in: 10.minutes}
             end
             menus = Rails.cache.fetch 'menus', cache_opts do
-              if Hancock.mongoid?
+              if ::Hancock.mongoid?
                 ::Hancock::Pages::Menu.all.map { |m| {id: m.id.to_s, name: m.name } }
               else
                 ::Hancock::Pages::Menu.all.map { |m| {id: m.id, name: m.name } }
               end
             end
             menus.each do |m|
-              if Hancock.mongoid?
+              if ::Hancock.mongoid?
                 on = obj.menu_ids.include?(BSON::ObjectId.from_string(m[:id]))
               else
                 on = obj.menu_ids.include?(m[:id].to_i)

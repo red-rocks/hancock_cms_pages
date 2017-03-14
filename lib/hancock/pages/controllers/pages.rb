@@ -23,6 +23,10 @@ module Hancock::Pages
         if Hancock::Pages.config.breadcrumbs_on_rails_support
           add_breadcrumb @seo_page.name, @seo_page.slug
         end
+
+        if Hancock::Pages.config.available_layouts.include?(@seo_page.layout_name)
+          render layout: @seo_page.layout_name
+        end
       end
 
       private

@@ -5,6 +5,7 @@ module RailsAdmin
     module Fields
       module Types
         class HancockConnectable < RailsAdmin::Config::Fields::Types::HasManyAssociation
+
           RailsAdmin::Config::Fields::Types::register(self)
           include RailsAdmin::Engine.routes.url_helpers
 
@@ -26,6 +27,7 @@ module RailsAdmin
               scope.unconnected(me).enabled.sorted
             end
           end
+
         end
       end
     end

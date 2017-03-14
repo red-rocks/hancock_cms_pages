@@ -30,6 +30,7 @@ module Hancock::Pages
           }
 
           field :name, type: String, localize: Hancock::Pages.config.localize, default: ""
+          field :layout_name, type: String, default: "application"
 
           field :regexp, type: String, default: ""
           field :redirect, type: String, default: ""
@@ -48,7 +49,7 @@ module Hancock::Pages
           scope :sorted, -> { order_by([:lft, :asc]) }
           scope :menu, ->(menu_id) { enabled.sorted.where(menu_ids: menu_id) }
         end
-        
+
       end
     end
   end
