@@ -367,10 +367,3 @@ module Hancock::Pages
     end
   end
 end
-# /(\[\[(\w+?)\]\] | \{\{(self\.(\w+?))\}\} | \{\{(([\w\-\.]+?)\.(\w+?))\}\} | \{\{(\w+?)\}\} | \{\{(BS\|(\w+?))\}\})/
-#
-# reg1 = /\[\[(?<new_bs>(?<new_bs_name>\w+?))\]\]/
-# reg2 = /\{\{(?<insertion>self\.(?<insertion_name>\w+?))\}\}/
-# reg3 = /\{\{(?<setting_with_ns>(?<setting_with_ns_ns>[\w\-\.]+?)\.(?<setting_with_ns_name>\w+?))\}\}/
-# reg4 = /\{\{(?<setting>(?<setting_name>\w+?))\}\}/
-# reg5 = /\{\{(?<old_bs>BS\|(?<old_bs_name>\w+?))\}\}/
