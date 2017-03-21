@@ -16,6 +16,6 @@
           - else
             == obj.content
               
-  = render 'shared/admin_link', obj: obj
-  - if !@seo_page.nil? && (@seo_page.id != obj.id || @seo_page.class.name != obj.class.name)
-    = render 'shared/admin_link', obj: @seo_page
+  / = render 'shared/admin_link', obj: obj
+  / - if !@seo_page.nil? && (@seo_page.id != obj.id || @seo_page.class.name != obj.class.name)
+  /   = render 'shared/admin_link', obj: @seo_page
