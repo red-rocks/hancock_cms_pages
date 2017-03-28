@@ -9,7 +9,7 @@ module Hancock::Pages
       Proc.new {
         active false
         label options[:label] || I18n.t('hancock.menu_title')
-        field :menus do
+        field :menus, :hancock_multiselect do
           searchable :name, :text_slug
         end
         field :fullpath, :string do
