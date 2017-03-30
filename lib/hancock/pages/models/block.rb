@@ -165,7 +165,7 @@ module Hancock::Pages
         end
 
         ret = ""
-        hancock_env = {block: self, called_from: [{object: self, nethod: :render_or_content_html}]}
+        hancock_env = {block: self, called_from: [{object: self, method: :render_or_content_html}]}
         hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
         locals = {}
         locals[:hancock_env] = hancock_env
@@ -207,7 +207,7 @@ module Hancock::Pages
             # view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
             if bs
               begin
-                view.render_blockset(bs, called_from: {object: self, nethod: :render_or_content_html})
+                view.render_blockset(bs, called_from: {object: self, method: :render_or_content_html})
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -248,7 +248,7 @@ module Hancock::Pages
         end
 
         ret = ""
-        hancock_env = {block: self, called_from: [{object: self, nethod: :render_or_content}]}
+        hancock_env = {block: self, called_from: [{object: self, method: :render_or_content}]}
         hancock_env[:called_from].unshift(opts.delete(:called_from)) if opts and opts[:called_from].present?
         locals = {}
         locals[:hancock_env] = hancock_env
@@ -292,7 +292,7 @@ module Hancock::Pages
             # view.render_blockset(bs, called_from: :render_or_content) rescue nil if bs
             if bs
               begin
-                view.render_blockset(bs, called_from: {object: self, nethod: :render_or_content})
+                view.render_blockset(bs, called_from: {object: self, method: :render_or_content})
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
