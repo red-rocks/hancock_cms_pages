@@ -117,12 +117,12 @@ module Hancock::Pages::Blocksetable
   end
 
   def blockset_navigation_item(primary, item, block=nil)
-    url = item.pageblock_selector.blank? ? item.slug : item.pageblock_selector #"javascript:;"
+    url = item.pageblock_selector.blank? ? item.get_fullpath : item.pageblock_selector #"javascript:;"
     content = item.menu_link_content.blank? ? item.name : item.menu_link_content.html_safe
     if block.nil?
-      primary.item(item.slug, content, url, item.nav_options)
+      primary.item(item.get_fullpath, content, url, item.nav_options)
     else
-      primary.item(item.slug, content, url, item.nav_options, &block)
+      primary.item(item.get_fullpath, content, url, item.nav_options, &block)
     end
   end
 

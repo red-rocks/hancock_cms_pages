@@ -65,10 +65,10 @@ module Hancock::Pages::NavMenu
         puts exception.backtrace.join("\n")
         Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
 
-        item.redirect.blank? ? item.fullpath : item.redirect
+        item.get_fullpath
       end
     else
-      item.redirect.blank? ? item.fullpath : item.redirect
+      item.get_fullpath
     end
   end
   def nav_get_menu_items(type)

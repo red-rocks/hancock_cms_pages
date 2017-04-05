@@ -21,7 +21,7 @@ module Hancock::Pages
         end
 
         if Hancock::Pages.config.breadcrumbs_on_rails_support
-          add_breadcrumb @seo_page.name, @seo_page.slug
+          add_breadcrumb @seo_page.name, @seo_page.get_fullpath
         end
 
         if Hancock::Pages.config.available_layouts.include?(@seo_page.layout_name)

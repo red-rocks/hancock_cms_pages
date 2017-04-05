@@ -33,10 +33,10 @@ module Hancock::Pages::Localizeable
         puts exception.backtrace.join("\n")
         Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
 
-        _url = item.redirect.blank? ? item.fullpath : item.redirect
+        _url = item.get_fullpath
       end
     else
-      _url = item.redirect.blank? ? item.fullpath : item.redirect
+      _url = item.get_fullpath
     end
     _localizable_regexp = Regexp.new("^(#{I18n.available_locales.map { |l| "\\/#{l}"}.join("|")})")
     ((params[:locale].blank? or _url =~ _localizable_regexp) ? "" : "/#{params[:locale]}") + _url
