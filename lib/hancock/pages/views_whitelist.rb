@@ -4,7 +4,7 @@ module Hancock::Pages::ViewsWhitelist
 
     class << base
       def whitelist
-        Settings.hancock_pages_blocks_whitelist
+        (Settings.hancock_pages_blocks_whitelist || {})
       end
       def whitelist_obj
         Settings.getnc(:hancock_pages_blocks_whitelist)
@@ -18,7 +18,7 @@ module Hancock::Pages::ViewsWhitelist
       end
 
       def blacklist
-        Settings.ns('admin').hancock_pages_blocks_blacklist
+        (Settings.ns('admin').hancock_pages_blocks_blacklist || {})
       end
       def blacklist_obj
         Settings.ns('admin').getnc(:hancock_pages_blocks_blacklist)
@@ -28,7 +28,7 @@ module Hancock::Pages::ViewsWhitelist
       end
 
       def whitelist_human_names
-        Settings.hancock_pages_blocks_human_names
+        (Settings.hancock_pages_blocks_human_names || {})
       end
       def whitelist_human_names_obj
         Settings.getnc(:hancock_pages_blocks_human_names)
