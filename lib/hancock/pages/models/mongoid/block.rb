@@ -28,6 +28,10 @@ module Hancock::Pages
             find_through(Hancock::Pages::Blockset, 'blocks', id)
           end
 
+          def get_fullpath
+            self.pageblock_selector.blank? ? "#" : self.pageblock_selector
+          end
+
           hancock_cms_html_field :content, type: String, localize: Hancock::Pages.config.localize, default: ""
 
           field :use_wrapper, type: Boolean, default: false
