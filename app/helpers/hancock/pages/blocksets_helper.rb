@@ -23,4 +23,12 @@ module Hancock::Pages::BlocksetsHelper
     Hancock::Pages::add_view_in_blacklist(_virtual_path)
   end
 
+  def hancock_env
+    {
+      block: ::Hancock::Pages::Block.new,
+      page: ::Hancock::Pages::Page.new,
+      called_from: []
+    }
+  end
+
 end
