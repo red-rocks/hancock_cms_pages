@@ -37,12 +37,20 @@ module Hancock::Pages
           # field :file_path, :string do
           #   searchable true
           # end
-          field :file_path, :enum do
+          field :file_path, :hancock_enum do
             enum do
               Hancock::Pages.whitelist_enum || []
             end
             multiple false
             searchable true
+            help do
+              if bindings[:view]._current_user and bindings[:view]._current_user.admin?
+                ret = []
+                ret << bindings[:view].link_to("Исходник текущего файла (#{bindings[:object].file_path})", "#", onclick: "$(this).siblings('pre').toggleClass('hidden'); return false;")
+                ret << "<pre class='hidden'><code>#{CGI.escapeHTML bindings[:object].file_source_code}</code></pre>"
+                ret.join.html_safe
+              end
+            end
           end
           field :content, :hancock_html do
             searchable true

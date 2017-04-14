@@ -319,12 +319,16 @@ module Hancock::Pages
         unless self.file_path.blank?
           ret = self.file_path_for_fs
           ret += ext if with_ext
-          ret = Rails.root.join("views", ret)
+          ret = Rails.root.join("app", "views", ret)
         end
         return ret
       end
-      def file_exists?
-        file_fullpath(true).exist?
+      def file_exists?(ext = ".html.slim")
+        !!((_filepath = file_fullpath(true, ext)) and _filepath.exist?)
+      end
+
+      def file_source_code(ext = ".html.slim")
+        (file_exists?(ext) ? File.read(file_fullpath(true, ext)) : "")
       end
 
       def nav_options
