@@ -17,8 +17,8 @@ module Hancock::Pages
 
           validates_inclusion_of :file_path, in: proc {
             # Settings.hancock_pages_blocks_whitelist.lines.map(&:strip).compact
-            # Hancock::Pages.whitelist_as_array.compact
-            (Hancock::Pages.whitelist_as_array - Hancock::Pages.blacklist_as_array).compact
+            # Hancock::Pages.views_whitelist_as_array.compact
+            (Hancock::Pages.views_whitelist_as_array - Hancock::Pages.views_blacklist_as_array).compact
           }, allow_blank: true
           # validates_inclusion_of :file_path, in: proc {
           #   Hancock::Pages::Blockset.settings.blocks_whitelist.lines.map(&:strip).compact

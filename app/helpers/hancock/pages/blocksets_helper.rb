@@ -15,7 +15,7 @@ module Hancock::Pages::BlocksetsHelper
 
   def hancock_pages_blocks_can_render_me?(opts = {})
     _virtual_path = Hancock::Pages::format_virtual_path(@virtual_path, opts[:is_partial])
-    Hancock::Pages::whitelist_as_array(opts[:exclude_blacklist]).include?(_virtual_path)
+    Hancock::Pages::view_whitelist_as_array(opts[:exclude_blacklist]).include?(_virtual_path)
   end
 
   def hancock_pages_blocks_cannot_render_me(opts = {})

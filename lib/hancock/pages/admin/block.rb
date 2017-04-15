@@ -39,7 +39,7 @@ module Hancock::Pages
           # end
           field :file_path, :hancock_enum do
             enum do
-              Hancock::Pages.whitelist_enum || []
+              Hancock::Pages.views_whitelist_enum || []
             end
             multiple false
             searchable true
@@ -75,6 +75,16 @@ module Hancock::Pages
 
           if Hancock::Pages.config.insertions_support
             group :insertions, &Hancock::Admin.insertions_block
+            group :insertions do
+              field :helpers_list do
+                read_only true
+                pretty_value do
+                  (Hancock::Pages.helpers_whitelist_enum || []).map do |h|
+                    bindings[:view].content_tag :div, h
+                  end.join.html_safe
+                end
+              end
+            end
           end
 
           Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)

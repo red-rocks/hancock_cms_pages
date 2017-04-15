@@ -27,7 +27,7 @@ module Hancock::Pages
         end
 
         def can_render?
-          Hancock::Pages::can_render_in_block?(self.file_path)
+          Hancock::Pages::can_render_view_in_block?(self.file_path)
         end
 
         if Hancock::Pages.config.insertions_support
@@ -53,7 +53,7 @@ module Hancock::Pages
               _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
                 if $4 == "FILE" and $3.blank?
                   clear_insertions ? "" : $1
-                elsif $4 =~ /\ABS\|(.*?)\Z/ and $3.blank?
+                elsif $4 =~ /\A(BS|HELPER)\|(.*?)\Z/ and $3.blank?
                   clear_insertions ? "" : $1
                 elsif $3 == "self" and !$4.blank?
                   if clear_insertions
@@ -91,7 +91,7 @@ module Hancock::Pages
               _content_html = content_html.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
                 if $4 == "FILE" and $3.blank?
                   clear_insertions ? "" : $1
-                elsif $4 =~ /\ABS\|(.*?)\Z/ and $3.blank?
+                elsif $4 =~ /\A(BS|HELPER)\|(.*?)\Z/ and $3.blank?
                   clear_insertions ? "" : $1
                 elsif $3 == "self" and !$4.blank?
                   if clear_insertions
@@ -132,7 +132,7 @@ module Hancock::Pages
         if !self.name.blank?
           self.name
         elsif self.render_file and !self.file_path.blank?
-          _human_name = Hancock::Pages.whitelist_human_names[self.file_path]
+          _human_name = Hancock::Pages.views_whitelist_human_names[self.file_path]
           if _human_name.blank?
             self.file_path_for_fs
           else
@@ -208,6 +208,22 @@ module Hancock::Pages
             if bs
               begin
                 view.render_blockset(bs, called_from: {object: self, method: :render_or_content_html})
+              rescue Exception => exception
+                if Hancock::Pages.config.verbose_render
+                  Rails.logger.error exception.message
+                  Rails.logger.error exception.backtrace.join("\n")
+                  puts exception.message
+                  puts exception.backtrace.join("\n")
+                end
+                Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                nil
+              end
+            end
+          end.gsub(/\{\{HELPER\|(.*?)\}\}/) do
+            helper_name = Hancock::Pages.views_whitelist_helpers[self.file_path]
+            if helper_name
+              begin
+                view.__send__(helper_name)
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message

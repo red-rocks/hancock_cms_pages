@@ -3,35 +3,35 @@ module Hancock::Pages::ViewsWhitelist
   def self.included(base)
 
     class << base
-      def whitelist
-        (Settings.hancock_pages_blocks_whitelist || {})
+      def views_whitelist
+        (Settings.hancock_pages_blocks_views_whitelist || {})
       end
-      def whitelist_obj
-        Settings.getnc(:hancock_pages_blocks_whitelist)
+      def views_whitelist_obj
+        Settings.getnc(:hancock_pages_blocks_views_whitelist)
       end
-      def whitelist_as_array(exclude_blacklist = false)
-        _list = whitelist.lines.map(&:strip).uniq
-        (exclude_blacklist ? (_list - blacklist_as_array) : _list)
+      def views_whitelist_as_array(exclude_blacklist = false)
+        _list = views_whitelist.lines.map(&:strip).uniq
+        (exclude_blacklist ? (_list - views_blacklist_as_array) : _list)
       end
-      def can_render_in_block?(path)
-        whitelist_as_array(true).include?(path)
-      end
-
-      def blacklist
-        (Settings.ns('admin').hancock_pages_blocks_blacklist || {})
-      end
-      def blacklist_obj
-        Settings.ns('admin').getnc(:hancock_pages_blocks_blacklist)
-      end
-      def blacklist_as_array
-        blacklist.lines.map(&:strip).uniq
+      def can_render_view_in_block?(path)
+        views_whitelist_as_array(true).include?(path)
       end
 
-      def whitelist_human_names
-        (Settings.hancock_pages_blocks_human_names || {})
+      def views_blacklist
+        (Settings.ns('admin').hancock_pages_blocks_views_blacklist || {})
       end
-      def whitelist_human_names_obj
-        Settings.getnc(:hancock_pages_blocks_human_names)
+      def views_blacklist_obj
+        Settings.ns('admin').getnc(:hancock_pages_blocks_views_blacklist)
+      end
+      def views_blacklist_as_array
+        views_blacklist.lines.map(&:strip).uniq
+      end
+
+      def views_whitelist_human_names
+        (Settings.hancock_pages_blocks_views_human_names || {})
+      end
+      def views_whitelist_human_names_obj
+        Settings.getnc(:hancock_pages_blocks_views_human_names)
       end
 
       def format_virtual_path(virtual_path, is_partial = nil)
@@ -49,10 +49,11 @@ module Hancock::Pages::ViewsWhitelist
       end
 
 
-      def whitelist_enum
-        # whitelist_as_array.map do |f|
-        (whitelist_as_array - blacklist_as_array).uniq.map do |f|
-          whitelist_human_names[f] ? ["#{whitelist_human_names[f]} (#{f})", f] : f
+      def views_whitelist_enum
+        # views_whitelist_as_array.map do |f|
+        # (views_whitelist_as_array - views_blacklist_as_array).uniq.map do |f|
+        views_whitelist_as_array(true).map do |f|
+          views_whitelist_human_names[f] ? ["#{views_whitelist_human_names[f]} (#{f})", f] : f
         end
       end
 
@@ -63,18 +64,18 @@ module Hancock::Pages::ViewsWhitelist
         end
         return nil if path.blank?
         path.strip!
-        current_whitelist_array = whitelist_as_array
+        current_whitelist_array = views_whitelist_as_array
         ret = true
         unless current_whitelist_array.include?(path)
           ret = false
           current_whitelist_array << path
-          whitelist_obj.update(raw: current_whitelist_array.join("\n"))
+          views_whitelist_obj.update(raw: current_whitelist_array.join("\n"))
         end
         unless name.blank?
-          current_whitelist_human_names = whitelist_human_names
+          current_whitelist_human_names = views_whitelist_human_names
           unless current_whitelist_human_names.keys.include?(path)
             current_whitelist_human_names[path] = name
-            whitelist_human_names_obj.update(raw: current_whitelist_human_names.to_yaml)
+            views_whitelist_human_names_obj.update(raw: current_whitelist_human_names.to_yaml)
           end
         end
         return ret
@@ -86,12 +87,12 @@ module Hancock::Pages::ViewsWhitelist
         end
         return nil if path.blank?
         path.strip!
-        current_blacklist_array = blacklist_as_array
+        current_blacklist_array = views_blacklist_as_array
         ret = true
         if current_blacklist_array.include?(path)
           ret = false
           current_blacklist_array << path
-          blacklist_obj.update(raw: current_blacklist_array.join("\n"))
+          views_blacklist_obj.update(raw: views_current_blacklist_array.join("\n"))
         end
         return ret
       end

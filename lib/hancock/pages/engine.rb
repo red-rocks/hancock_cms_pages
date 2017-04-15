@@ -51,10 +51,25 @@ module Hancock::Pages
       # Write default email settings to DB so they can be changed.
       begin
         if Settings and Settings.table_exists?
-          Settings.hancock_pages_blocks_whitelist(default: '', kind: :text, label: 'Белый список блоков') unless RailsAdminSettings::Setting.ns("main").where(key: "hancock_pages_blocks_whitelist").exists?
-          Settings.hancock_pages_blocks_human_names(default: '', kind: :yaml, label: 'Имена блоков') unless RailsAdminSettings::Setting.ns("main").where(key: "hancock_pages_blocks_human_names").exists?
+          # Settings.hancock_pages_blocks_whitelist(default: '', kind: :text, label: 'Белый список блоков') unless RailsAdminSettings::Setting.ns("main").where(key: "hancock_pages_blocks_whitelist").exists?
+          # Settings.hancock_pages_blocks_human_names(default: '', kind: :yaml, label: 'Имена блоков') unless RailsAdminSettings::Setting.ns("main").where(key: "hancock_pages_blocks_human_names").exists?
 
-          Settings.ns('admin').hancock_pages_blocks_blacklist(default: '', kind: :text, label: 'Черный список блоков') unless RailsAdminSettings::Setting.ns("admin").where(key: "hancock_pages_blocks_blacklist").exists?
+          # Settings.ns('admin').hancock_pages_blocks_blacklist(default: '', kind: :text, label: 'Черный список блоков') unless RailsAdminSettings::Setting.ns("admin").where(key: "hancock_pages_blocks_blacklist").exists?
+
+
+          unless Settings.rename(:hancock_pages_blocks_whitelist, :hancock_pages_blocks_views_whitelist)
+            Settings.hancock_pages_blocks_views_whitelist(default: '', kind: :text, label: 'Белый список блоков') unless Settings.exists?("hancock_pages_blocks_views_whitelist")
+          end
+          unless Settings.rename(:hancock_pages_blocks_human_names, :hancock_pages_blocks_views_human_names)
+            Settings.hancock_pages_blocks_views_human_names(default: '', kind: :yaml, label: 'Имена блоков') unless Settings.exists?("hancock_pages_blocks_views_human_names")
+          end
+          unless Settings.ns('admin').rename(:hancock_pages_blocks_blacklist, :hancock_pages_blocks_views_blacklist)
+            Settings.ns('admin').hancock_pages_blocks_views_blacklist(default: '', kind: :text, label: 'Черный список блоков') unless Settings.ns('admin').exists?("hancock_pages_blocks_views_blacklist")
+          end
+
+          Settings.ns('admin').helpers_whitelist(default: '', kind: :text, label: 'Белый список хелперов') unless Settings.ns('admin').exists?("helpers_whitelist")
+          Settings.ns('admin').helpers_human_names(default: '', kind: :yaml, label: 'Имена хелперов') unless Settings.ns('admin').exists?("helpers_human_names")
+
         end
       rescue
       end
