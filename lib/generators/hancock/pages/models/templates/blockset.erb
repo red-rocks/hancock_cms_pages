@@ -1,6 +1,6 @@
 class <%= camelcased_class_name %> < Hancock::Pages::Blockset
 
-  # embeds_many :blocks, inverse_of: :blockset, class_name: "Hancock::Pages::Block"
+  # embeds_many :blocks, inverse_of: :blockset, class_name: "Hancock::Pages::Block", order: [:order, :asc]
   # accepts_nested_attributes_for :blocks, allow_destroy: true
 
   ############ rails_admin ##############
