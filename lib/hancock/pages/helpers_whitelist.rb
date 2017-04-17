@@ -4,10 +4,10 @@ module Hancock::Pages::HelpersWhitelist
 
     class << base
       def helpers_whitelist
-        (Settings.hancock_pages_blocks_helpers_whitelist || {})
+        (Settings.ns('admin').helpers_whitelist || {})
       end
       def helpers_whitelist_obj
-        Settings.getnc(:hancock_pages_blocks_helpers_whitelist)
+        Settings.ns('admin').getnc(:helpers_whitelist)
       end
       def helpers_whitelist_as_array(exclude_blacklist = false)
         _list = helpers_whitelist.lines.map(&:strip).uniq
@@ -31,7 +31,7 @@ module Hancock::Pages::HelpersWhitelist
       end
 
       def helpers_whitelist_human_names
-        (Settings.helpers_whitelist || {})
+        (Settings.helpers_human_names || {})
       end
       def helpers_whitelist_human_names_obj
         Settings.getnc(:helpers_human_names)

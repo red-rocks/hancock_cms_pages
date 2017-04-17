@@ -36,12 +36,18 @@ module Hancock::Pages::Blocksetable
         type = opts[-2] #backward compatibility
         opts = opts[-1]
       else
-        type = opts[-1] #backward compatibility
-        opts = {}
+        if opts[-1].is_a?(Symbol) or opts[-1].is_a?(String)
+          type = opts[-1] #backward compatibility
+          opts = {view: opts[0]}
+        else
+          type = opts[0] #backward compatibility
+          opts = {view: opts[-1]}
+        end
       end
     end
     ret = []
     need_render_blockset = true
+    view = opts[:view] || self
     begin
       blockset = get_blockset(type)
       if block_given? and (blockset.new_record? or opts[:overwrite])
@@ -59,11 +65,11 @@ module Hancock::Pages::Blocksetable
       if need_render_blockset
         blocks = blockset_get_blocks_for_render(blockset)
         blocks.each do |block|
-          ret << block.render_or_content_html(self, opts) do |html|
+          ret << block.render_or_content_html(view, opts) do |html|
             after_render_blockset_block block, html
           end
         end
-        ret = blockset.render(self, ret.join.html_safe) do |html|
+        ret = blockset.render(view, ret.join.html_safe) do |html|
           after_render_blockset blockset, html
         end
       end
@@ -88,6 +94,7 @@ module Hancock::Pages::Blocksetable
   end
 
   def get_blockset(type)
+    return nil if type.blank?
     if type.is_a?(blockset_class)
       type
     else

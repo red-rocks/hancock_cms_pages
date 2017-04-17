@@ -31,4 +31,13 @@ module Hancock::Pages::BlocksetsHelper
     }
   end
 
+
+
+  def cached_blockset_navigation(blockset_key = :main)
+    render partial: 'blocks/cached_blockset_navigation', locals: {blockset_key: blockset_key}
+  end
+  def cached_blockset_navigation_main
+    cached_blockset_navigation
+  end
+
 end

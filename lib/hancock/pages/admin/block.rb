@@ -44,12 +44,21 @@ module Hancock::Pages
             multiple false
             searchable true
             help do
+              ret = []
+              _links = []
               if bindings[:view]._current_user and bindings[:view]._current_user.admin?
-                ret = []
-                ret << bindings[:view].link_to("Исходник текущего файла (#{bindings[:object].file_path})", "#", onclick: "$(this).siblings('pre').toggleClass('hidden'); return false;")
-                ret << "<pre class='hidden'><code>#{CGI.escapeHTML bindings[:object].file_source_code}</code></pre>"
-                ret.join.html_safe
+                _name = "Исходник текущего файла (#{bindings[:object].file_path})"
+                _links << bindings[:view].link_to(_name, "#", onclick: "$(this).siblings('pre').addClass('hidden').filter('.source').removeClass('hidden'); return false;")
+                ret << "<pre class='source hidden'><code>#{CGI.escapeHTML bindings[:object].file_source_code}</code></pre>"
               end
+              if Hancock::Pages.config.cache_support and (_frag = bindings[:object].possible_cache_fragment)
+                _name = "Возможный фрагмент кеша"
+                _links << bindings[:view].link_to(_name, "#", onclick: "$(this).siblings('pre').addClass('hidden').filter('.cache').removeClass('hidden'); return false;")
+                ret << "<pre class='cache hidden'><code>#{CGI.escapeHTML(_frag.data)}</code></pre>"
+              end
+              _links << bindings[:view].link_to("Скрыть все", "#", onclick: "$(this).siblings('pre').addClass('hidden'); return false;")
+              [_links.join(" | "), ret].flatten.join.html_safe
+
             end
           end
           field :content, :hancock_html do
