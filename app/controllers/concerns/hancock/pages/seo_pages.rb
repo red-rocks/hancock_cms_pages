@@ -94,6 +94,6 @@ module Hancock::Pages::SeoPages
   end
 
   def rails_admin?
-    self.is_a?(RailsAdmin::ApplicationController) || self.is_a?(RailsAdmin::MainController)
+    self.is_a?(RailsAdmin::ApplicationController) || self.is_a?(RailsAdmin::MainController) || (respond_to?(:rails_admin_controller?) and rails_admin_controller?)
   end
 end
