@@ -81,7 +81,8 @@ module Hancock::Pages
 
           sort_embedded(
             {
-              fields: [:blocks]
+              fields: [:blocks],
+              label_methods: [:name, :title, :label, :rails_admin_label]
             }
           )
 

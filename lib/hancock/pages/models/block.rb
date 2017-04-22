@@ -177,6 +177,7 @@ module Hancock::Pages
         if view.is_a?(Hash)
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
+        opts = opts.clone
         Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
           unless view.class < lib_extends
             if view.respond_to?(:prepend)
@@ -193,8 +194,13 @@ module Hancock::Pages
         locals = {}
         locals[:hancock_env] = hancock_env
 
-        if self.render_file and !self.file_path.blank?
+        if self.partial?
           opts.merge!(partial: self.file_path, locals: locals)
+        else
+          opts.merge!(file: self.file_path, locals: locals, layout: false)
+        end
+
+        if self.render_file and !self.file_path.blank?
           # ret = view.render_to_string(opts) rescue self.content_html.html_safe
           ret = begin
             if can_render?
@@ -215,7 +221,6 @@ module Hancock::Pages
             self.content_html.html_safe
           end
         else
-          opts.merge!(partial: self.file_path, locals: locals)
           # ret = self.block_content_html(false).gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
           ret = self.block_content_html(false).gsub("{{FILE}}") do
             # view.render(opts) rescue nil
@@ -282,6 +287,7 @@ module Hancock::Pages
         if view.is_a?(Hash)
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
+        opts = opts.clone
         Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
           unless view.class < lib_extends
             if view.respond_to?(:prepend)
@@ -298,8 +304,13 @@ module Hancock::Pages
         locals = {}
         locals[:hancock_env] = hancock_env
 
-        unless self.file_path.blank?
+        if self.partial?
           opts.merge!(partial: self.file_path, locals: locals)
+        else
+          opts.merge!(file: self.file_path, locals: locals, layout: false)
+        end
+
+        unless self.file_path.blank?
 
           # ret = view.render_to_string(opts) rescue self.content
           ret = begin
@@ -322,7 +333,6 @@ module Hancock::Pages
           end
           # ret = view.render(opts) rescue self.content
         else
-          opts.merge!(partial: self.file_path, locals: locals)
           ret = self.block_content(false).gsub("{{FILE}}") do
             # view.render_to_string(opts) rescue nil
             begin

@@ -38,10 +38,10 @@ module Hancock::Pages::Blocksetable
       else
         if opts[-1].is_a?(Symbol) or opts[-1].is_a?(String)
           type = opts[-1] #backward compatibility
-          opts = {view: opts[0]}
+          opts = ((opts.length == 1) ? {} : {view: opts[0]})
         else
           type = opts[0] #backward compatibility
-          opts = {view: opts[-1]}
+          opts = ((opts.length == 1) ? {} : {view: opts[-1]})
         end
       end
     end
