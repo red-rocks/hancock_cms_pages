@@ -9,8 +9,34 @@ module Hancock::Pages::ViewsWhitelist
       def views_whitelist_obj
         Settings.getnc(:hancock_pages_blocks_views_whitelist)
       end
-      def views_whitelist_as_array(exclude_blacklist = false)
+      def views_whitelist_as_array(exclude_blacklist = false, include_standalones = true)
+        if exclude_blacklist.is_a?(Hash)
+          exclude_blacklist, include_standalones =
+            exclude_blacklist[:exclude_blacklist], exclude_blacklist[:include_standalones]
+        end
         _list = views_whitelist.lines.map(&:strip).uniq
+        if include_standalones
+          Hancock::Pages.config.standalone_paths.each do |spath|
+            spath = spath.join("/") if spath.is_a?(Array)
+            _list += ActionController::Base.view_paths.paths.map { |p|
+              {
+                views_path: p,
+                standalone_path: Pathname.new(p.to_s).join(spath)
+              }
+            }.select { |p| # only existed standalones path
+              p[:standalone_path].exist?
+            }.map { |p| # add standalones files
+              p.merge(files: Dir[p[:standalone_path].join("**/*").to_s].select { |f| File.file?(f) })
+            }.map { |p| # format standalones files for render path
+              p[:files].map { |f|
+                path = p[:views_path].to_s
+                path += "/" unless path[-1] == "/"
+                f.sub(path, '').sub(/(\.[^\/]+)?$/, '').sub(/\/_?([^\/]+)?$/, '/\1')
+              }
+            }.flatten
+          end
+          _list.uniq!
+        end
         (exclude_blacklist ? (_list - views_blacklist_as_array) : _list)
       end
       def can_render_view_in_block?(path)

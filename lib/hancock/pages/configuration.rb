@@ -27,6 +27,8 @@ module Hancock::Pages
 
     attr_accessor :available_layouts
 
+    attr_accessor :standalone_paths
+
     def initialize
       @menu_max_depth = 2
 
@@ -52,6 +54,8 @@ module Hancock::Pages
       @raven_support = !!(Hancock.config.respond_to?(:raven_support) ? Hancock.config.raven_support : defined?(Raven))
 
       @available_layouts = ["application"]
+
+      @standalone_paths = [['hancock', 'standalone']]
 
     end
   end
