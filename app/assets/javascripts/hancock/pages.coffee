@@ -1,5 +1,5 @@
 #= require ./pages/init
-#= require ./pages/form
+#= require ./pages/scrolling
 
 #= require_self
 
