@@ -1,5 +1,5 @@
 module Hancock
   module Pages
-    VERSION = "1.0.2".freeze
+    VERSION = "2.1.0".freeze
   end
 end
