@@ -8,6 +8,16 @@ module Hancock::Pages
 
       if Hancock::Pages.config.insertions_support
         include Hancock::InsertionField
+
+        REGEXP = Hancock::InsertionField::REGEXP.merge({
+          new_helper: /\[\[\[\[(?<new_helper>(?<new_helper_name>\w+?))\]\]\]\]/i,
+          old_helper: /\{\{(?<old_helper>HELPER\|(?<old_helper_name>\w+?))\}\}/i,
+          helper:     /(\[\[\[\[(?<helper>(?<helper_name>\w+?))\]\]\]\]|\{\{(?<helper>HELPER\|(?<helper_name>\w+?))\}\})/i,
+          new_bs:     /\[\[(?<new_bs>(?<new_bs_name>\w+?))\]\]/i,
+          old_bs:     /\{\{(?<old_bs>BS\|(?<old_bs_name>\w+?))\}\}/i,
+          bs:         /(\[\[(?<bs>(?<bs_name>\w+?))\]\]|\{\{(?<bs>BS\|(?<bs_name>\w+?))\}\})/i,
+          file:       /\{\{(?<file>FILE)\}\}/i
+        })
       end
 
       include Hancock::Pages.orm_specific('Block')
@@ -36,6 +46,7 @@ module Hancock::Pages
           alias :block_content :page_content
           alias :block_content_html :page_content_html
         end
+
         def block_content(clear_insertions = true)
           if clear_insertions.is_a?(Hash)
             clear_insertions = clear_insertions[:clear_insertions]
@@ -50,31 +61,92 @@ module Hancock::Pages
               # _content = content.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
               #   $2
               # end.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
-              _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
-                full_insertion = $1
-                self_insertion_mark_or_setting_ns = $3
-                insertion_name_or_setting_name = $4
+              # _content = content.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
+              #   full_insertion = $1
+              #   self_insertion_mark_or_setting_ns = $3
+              #   insertion_name_or_setting_name = $4
+              #
+              #   if insertion_name_or_setting_name == "FILE" and self_insertion_mark_or_setting_ns.blank?
+              #     clear_insertions ? "" : full_insertion
+              #   elsif insertion_name_or_setting_name =~ /\A(BS|HELPER)\|(.*?)\Z/ and $3.blank?
+              #     clear_insertions ? "" : full_insertion
+              #   elsif self_insertion_mark_or_setting_ns == "self" and !insertion_name_or_setting_name.blank?
+              #     if clear_insertions
+              #       ""
+              #     elsif Hancock::Pages.config.insertions_support
+              #       get_insertion(insertion_name_or_setting_name)
+              #     else
+              #       full_insertion
+              #     end
+              #   else
+              #     if (Settings and !insertion_name_or_setting_name.blank? and self_insertion_mark_or_setting_ns != "self")
+              #       Settings.ns(self_insertion_mark_or_setting_ns).get(insertion_name_or_setting_name)
+              #     else
+              #       "" #temp
+              #     end
+              #   end
+              # end
 
-                if insertion_name_or_setting_name == "FILE" and self_insertion_mark_or_setting_ns.blank?
-                  clear_insertions ? "" : full_insertion
-                elsif insertion_name_or_setting_name =~ /\A(BS|HELPER)\|(.*?)\Z/ and $3.blank?
-                  clear_insertions ? "" : full_insertion
-                elsif self_insertion_mark_or_setting_ns == "self" and !insertion_name_or_setting_name.blank?
-                  if clear_insertions
-                    ""
-                  elsif Hancock::Pages.config.insertions_support
-                    get_insertion(insertion_name_or_setting_name)
-                  else
-                    full_insertion
-                  end
+
+              _content = content.gsub(REGEXP[:file]) do |data|
+                if clear_insertions
+                  ""
                 else
-                  if (Settings and !insertion_name_or_setting_name.blank? and self_insertion_mark_or_setting_ns != "self")
-                    Settings.ns(self_insertion_mark_or_setting_ns).get(insertion_name_or_setting_name)
+                  data
+                end
+
+              end.gsub(REGEXP[:old_insertion]) do |data|
+                if clear_insertions
+                  ""
+                elsif Hancock::Pages.config.insertions_support
+                  get_insertion($~[:old_insertion_name]) rescue ""
+                else
+                  data
+                end
+
+              end.gsub(REGEXP[:new_insertion]) do |data|
+                if clear_insertions
+                  ""
+                elsif Hancock::Pages.config.insertions_support
+                  get_insertion($~[:new_insertion_name]) rescue ""
+                else
+                  data
+                end
+
+              end.gsub(REGEXP[:settings]) do
+                if defined?(Settings)
+                  name = $~[:setting_name]
+                  if !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
                   else
-                    "" #temp
+                    ""
                   end
                 end
+
+              end.gsub(REGEXP[:settings_with_ns]) do
+                if defined?(Settings)
+                  ns = $~[:setting_with_ns_ns]
+                  name = $~[:setting_with_ns_name]
+                  if ns != "self" and !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
+                  else
+                    ""
+                  end
+                end
+
+              end.gsub(REGEXP[:old_helper]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:new_helper]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:old_bs]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:new_bs]) do |data|
+                clear_insertions ? "" : data
               end
+
               @content_used = true
               _content
             end
@@ -96,31 +168,92 @@ module Hancock::Pages
               # _content_html = content_html.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
               #   $2
               # end.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
-              _content_html = content_html.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
-                full_insertion = $1
-                self_insertion_mark_or_setting_ns = $3
-                insertion_name_or_setting_name = $4
+              # _content_html = content_html.gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
+              #   full_insertion = $1
+              #   self_insertion_mark_or_setting_ns = $3
+              #   insertion_name_or_setting_name = $4
+              #
+              #   if insertion_name_or_setting_name == "FILE" and self_insertion_mark_or_setting_ns.blank?
+              #     clear_insertions ? "" : full_insertion
+              #   elsif insertion_name_or_setting_name =~ /\A(BS|HELPER)\|(.*?)\Z/ and $3.blank?
+              #     clear_insertions ? "" : full_insertion
+              #   elsif self_insertion_mark_or_setting_ns == "self" and !insertion_name_or_setting_name.blank?
+              #     if clear_insertions
+              #       ""
+              #     elsif Hancock::Pages.config.insertions_support
+              #       get_insertion(insertion_name_or_setting_name)
+              #     else
+              #       full_insertion
+              #     end
+              #   else
+              #     if (Settings and !insertion_name_or_setting_name.blank? and self_insertion_mark_or_setting_ns != "self")
+              #       Settings.ns(self_insertion_mark_or_setting_ns).get(insertion_name_or_setting_name)
+              #     else
+              #       "" #temp
+              #     end
+              #   end
+              # end
 
-                if insertion_name_or_setting_name == "FILE" and self_insertion_mark_or_setting_ns.blank?
-                  clear_insertions ? "" : full_insertion
-                elsif insertion_name_or_setting_name =~ /\A(BS|HELPER)\|(.*?)\Z/ and $3.blank?
-                  clear_insertions ? "" : full_insertion
-                elsif self_insertion_mark_or_setting_ns == "self" and !insertion_name_or_setting_name.blank?
-                  if clear_insertions
-                    ""
-                  elsif Hancock::Pages.config.insertions_support
-                    get_insertion(insertion_name_or_setting_name)
-                  else
-                    full_insertion
-                  end
+
+              _content_html = content_html.gsub(REGEXP[:file]) do |data|
+                if clear_insertions
+                  ""
                 else
-                  if (Settings and !insertion_name_or_setting_name.blank? and self_insertion_mark_or_setting_ns != "self")
-                    Settings.ns(self_insertion_mark_or_setting_ns).get(insertion_name_or_setting_name)
+                  data
+                end
+
+              end.gsub(REGEXP[:old_insertion]) do |data|
+                if clear_insertions
+                  ""
+                elsif Hancock::Pages.config.insertions_support
+                  get_insertion($~[:old_insertion_name]) rescue ""
+                else
+                  data
+                end
+
+              end.gsub(REGEXP[:new_insertion]) do |data|
+                if clear_insertions
+                  ""
+                elsif Hancock::Pages.config.insertions_support
+                  get_insertion($~[:new_insertion_name]) rescue ""
+                else
+                  data
+                end
+
+              end.gsub(REGEXP[:settings]) do
+                if defined?(Settings)
+                  name = $~[:setting_name]
+                  if !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
                   else
-                    "" #temp
+                    ""
                   end
                 end
+
+              end.gsub(REGEXP[:settings_with_ns]) do
+                if defined?(Settings)
+                  ns = $~[:setting_with_ns_ns]
+                  name = $~[:setting_with_ns_name]
+                  if ns != "self" and !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
+                  else
+                    ""
+                  end
+                end
+
+              end.gsub(REGEXP[:old_helper]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:new_helper]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:old_bs]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:new_bs]) do |data|
+                clear_insertions ? "" : data
               end
+
               @content_html_used = true
               _content_html
             end
@@ -222,7 +355,7 @@ module Hancock::Pages
           end
         else
           # ret = self.block_content_html(false).gsub(/(\{\{(([^\.]*?)\.)?(.*?)\}\})/) do
-          ret = self.block_content_html(false).gsub("{{FILE}}") do
+          ret = self.block_content_html(false).gsub(REGEXP[:file]) do
             # view.render(opts) rescue nil
             begin
               view.render(opts) if can_render?
@@ -236,8 +369,8 @@ module Hancock::Pages
               Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
               nil
             end
-          end.gsub(/\{\{BS\|(.*?)\}\}/) do
-            bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+          end.gsub(REGEXP[:bs]) do
+            bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
             # view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
             if bs
               begin
@@ -253,11 +386,10 @@ module Hancock::Pages
                 nil
               end
             end
-          end.gsub(/\{\{HELPER\|(.*?)\}\}/) do
-            helper_name = $1
-            if Hancock::Pages.helpers_whitelist_as_array.include?(helper_name)
+          end.gsub(REGEXP[:helper]) do
+            if Hancock::Pages.helpers_whitelist_as_array.include?($~[:helper_name])
               begin
-                view.__send__(helper_name)
+                view.__send__($~[:helper_name])
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -333,7 +465,7 @@ module Hancock::Pages
           end
           # ret = view.render(opts) rescue self.content
         else
-          ret = self.block_content(false).gsub("{{FILE}}") do
+          ret = self.block_content(false).gsub(REGEXP[:file]) do
             # view.render_to_string(opts) rescue nil
             begin
               if can_render?
@@ -354,8 +486,8 @@ module Hancock::Pages
               nil
             end
             # view.render(opts) rescue nil
-          end.gsub(/\{\{BS\|(.*?)\}\}/) do
-            bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+          end.gsub(REGEXP[:bs]) do
+            bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
             # view.render_blockset(bs, called_from: :render_or_content) rescue nil if bs
             if bs
               begin
@@ -371,9 +503,8 @@ module Hancock::Pages
                 nil
               end
             end
-          end.gsub(/\{\{HELPER\|(.*?)\}\}/) do
-            helper_name = $1
-            if Hancock::Pages.helpers_whitelist_as_array.include?(helper_name)
+          end.gsub(REGEXP[:helper]) do
+            if Hancock::Pages.helpers_whitelist_as_array.include?($~[:helper_name])
               begin
                 view.__send__(helper_name)
               rescue Exception => exception
@@ -449,6 +580,9 @@ module Hancock::Pages
         else
           self[:wrapper_attributes] = wrapper_attributes
         end
+      end
+      def wrapper_attributes_str
+        self[:wrapper_attributes] ||= self.wrapper_attributes.to_json if self.wrapper_attributes
       end
 
     end

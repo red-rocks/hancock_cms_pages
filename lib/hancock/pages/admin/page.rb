@@ -42,7 +42,6 @@ module Hancock::Pages
               queryable true
             end
 
-            # group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
             group :content, &Hancock::Admin.content_block(excerpt: false)
             if Hancock::Pages.config.cache_support
               group :caching, &Hancock::Cache::Admin.caching_block
@@ -61,37 +60,12 @@ module Hancock::Pages
               read_only true
             end
 
-            # group :content, &Hancock::Admin.content_block(excluded_fields: [:excerpt])
             group :content, &Hancock::Admin.content_block(excerpt: false)
-            # group :content do
-            #   active false
-            #   field :excerpt, :hancock_html
-            #   # field :excerpt_html, :ck_editor
-            #   # field :excerpt_clear, :toggle
-            #   field :content, :hancock_html
-            #   # field :content_html, :ck_editor
-            #   # field :content_clear, :toggle
-            # end
 
             group :wrapper, &Hancock::Pages::Admin.wrapper_block
 
 
             group :menu, &Hancock::Pages::Admin.menu_block
-            # group :menu do
-            #   active false
-            #   label I18n.t('hancock.menu_title')
-            #   field :menus
-            #   field :fullpath, :string do
-            #     help I18n.t('hancock.with_final_slash')
-            #   end
-            #   field :regexp, :string do
-            #     help I18n.t('hancock.page_url_regex')
-            #   end
-            #   field :redirect, :string do
-            #     help I18n.t('hancock.final_in_menu')
-            #   end
-            #   field :text_slug
-            # end
 
             if Hancock::Pages.config.cache_support
               group :caching, &Hancock::Cache::Admin.caching_block
@@ -102,14 +76,6 @@ module Hancock::Pages
             if Hancock::Pages.config.seo_support
               group :seo_n_sitemap, &Hancock::Seo::Admin.seo_n_sitemap_block
             end
-            # group :seo do
-            #   active false
-            #   field :seo
-            # end
-            # group :sitemap_data do
-            #   active false
-            #   field :sitemap_data
-            # end
 
             if Hancock::Pages.config.cache_support
               group :caching, &Hancock::Cache::Admin.caching_block

@@ -15,6 +15,16 @@ module Hancock::Pages
       end
       if Hancock::Pages.config.insertions_support
         include Hancock::InsertionField
+
+        REGEXP = Hancock::InsertionField::REGEXP.merge({
+          new_helper: /\[\[\[\[(?<new_helper>(?<new_helper_name>\w+?))\]\]\]\]/i,
+          old_helper: /\{\{(?<old_helper>HELPER\|(?<old_helper_name>\w+?))\}\}/i,
+          helper:     /(\[\[\[\[(?<helper>(?<helper_name>\w+?))\]\]\]\]|\{\{(?<helper>HELPER\|(?<helper_name>\w+?))\}\})/i,
+          new_bs:     /\[\[(?<new_bs>(?<new_bs_name>\w+?))\]\]/i,
+          old_bs:     /\{\{(?<old_bs>BS\|(?<old_bs_name>\w+?))\}\}/i,
+          bs:         /(\[\[(?<bs>(?<bs_name>\w+?))\]\]|\{\{(?<bs>BS\|(?<bs_name>\w+?))\}\})/i,
+          file:       /\{\{(?<file>FILE)\}\}/i
+        })
       end
 
       include Hancock::Pages.orm_specific('Page')
@@ -60,8 +70,8 @@ module Hancock::Pages
               view.extend ActionView::Context
               # {{BS|%blockset_name%}}
               # excerpt.gsub(/\{\{(.*?)\}\}/) do
-              _excerpt = excerpt.gsub(/\{\{BS\|(.*?)\}\}/) do
-                bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+              _excerpt = excerpt.gsub(REGEXP[:bs]) do
+                bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
                 if bs
                   begin
                     view.render_blockset(bs, called_from: {object: self, method: :page_excerpt})
@@ -77,21 +87,33 @@ module Hancock::Pages
                 end
 
               # {{self.%insertion%}}
-              end.gsub(/(\{\{self\.(.*?)\}\})/) do
+              end.gsub(REGEXP[:insertion]) do |data|
                 if Hancock::Pages.config.insertions_support
-                  get_insertion($2)
+                  get_insertion($~[:insertion_name])
                 else
-                  $1
+                  data
                 end
 
-              # {{"some_text"}} #temporary disabled - need tests
-              # {{"some_text"}}
-              # end.gsub(/\{\{(\'|\"|&quot;|&#39;)(.*?)(\1)\}\}/) do
-              #   $2
+              end.gsub(REGEXP[:settings]) do
+                if defined?(Settings)
+                  name = $~[:setting_name]
+                  if !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
+                  else
+                    ""
+                  end
+                end
 
-              # {{%ns%.%key%}}
-              end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-                (Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "" #temp
+              end.gsub(REGEXP[:settings_with_ns]) do
+                if defined?(Settings)
+                  ns = $~[:setting_with_ns_ns]
+                  name = $~[:setting_with_ns_name]
+                  if ns != "self" and !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
+                  else
+                    ""
+                  end
+                end
               end
               @excerpt_used = true
               _excerpt
@@ -112,11 +134,11 @@ module Hancock::Pages
 
               # {{BS|%blockset_name%}}
               # content.gsub(/\{\{(.*?)\}\}/) do
-              _content = content.gsub(/\{\{BS\|(.*?)\}\}/) do
-                bs = Hancock::Pages::Blockset.enabled.where(name: $1).first
+              _content = content.gsub(REGEXP[:bs]) do
+                bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
                 if bs
                   begin
-                    view.render_blockset(bs, called_from: {object: self, method: :page_content})
+                    view.render_blockset(bs, called_from: {object: self, method: :page_excerpt})
                   rescue Exception => exception
                     if Hancock::Pages.config.verbose_render
                       Rails.logger.error exception.message
@@ -129,25 +151,37 @@ module Hancock::Pages
                 end
 
               # {{self.%insertion%}}
-              end.gsub(/(\{\{self\.(.*?)\}\})/) do
+              end.gsub(REGEXP[:insertion]) do |data|
                 if Hancock::Pages.config.insertions_support
-                  get_insertion($2)
+                  get_insertion($~[:insertion_name])
                 else
-                  $1
+                  data
                 end
 
-              # {{"some_text"}} #temporary disabled - need tests
-              # end.gsub(/\{\{(['"])(.*?)(\1)\}\}/) do
-              # end.gsub(/\{\{(\'|\"|&quot;|&#39;)(.*?)(\1)\}\}/) do
-              #   $2
+              end.gsub(REGEXP[:settings]) do
+                if defined?(Settings)
+                  name = $~[:setting_name]
+                  if !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
+                  else
+                    ""
+                  end
+                end
 
-              # {{%ns%.%key%}}
-              end.gsub(/\{\{(([^\.]*?)\.)?(.*?)\}\}/) do
-                ((Settings and !$3.nil? and $2 != "self") ? Settings.ns($2).get($3).val : "") rescue "" #temp
+              end.gsub(REGEXP[:settings_with_ns]) do
+                if defined?(Settings)
+                  ns = $~[:setting_with_ns_ns]
+                  name = $~[:setting_with_ns_name]
+                  if ns != "self" and !name.blank?
+                    Settings.ns(ns).get(name) rescue ""
+                  else
+                    ""
+                  end
+                end
               end
+              @content_used = true
+              _content
             end
-            @content_used = true
-            _content
           else
             ''
           end
@@ -226,18 +260,14 @@ module Hancock::Pages
             self[:wrapper_attributes] = wrapper_attributes
           end
         end
+        def wrapper_attributes_str
+          self[:wrapper_attributes] ||= self.wrapper_attributes.to_json if self.wrapper_attributes
+        end
 
       end
 
 
       class_methods do
-
-        def goto_hancock
-          self.where(hancock_connectable_type: /^Enjoy/).all.map { |s|
-            s.hancock_connectable_type = s.hancock_connectable_type.sub("Enjoy", "Hancock");
-            s.save
-          }
-        end
 
         def manager_can_add_actions
           ret = [:nested_set]

@@ -54,11 +54,23 @@ module Hancock::Pages
         field :wrapper_id, :string do
           searchable true
         end
-        field :wrapper_attributes, :text do
+        # field :wrapper_attributes, :text do
+        #   searchable true
+        #   formatted_value do
+        #     bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
+        #   end
+        # end
+        field :wrapper_attributes, :hancock_hash do
           searchable true
-          formatted_value do
-            bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
+          hash_method do
+            :wrapper_attributes
           end
+          editor_type do
+            :full
+          end
+          # formatted_value do
+          #   bindings[:object] and bindings[:object].wrapper_attributes ? bindings[:object].wrapper_attributes.to_json : "{}"
+          # end
         end
 
         Hancock::RailsAdminGroupPatch::hancock_cms_group(self, options[:fields] || {})

@@ -53,6 +53,9 @@ module Hancock::Pages
             self[:wrapper_attributes] = wrapper_attributes
           end
         end
+        def wrapper_attributes_str
+          self[:wrapper_attributes] ||= self.wrapper_attributes.to_json if self.wrapper_attributes
+        end
 
       end
 
