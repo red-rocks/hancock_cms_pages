@@ -10,9 +10,6 @@ module Hancock::Pages
         include Hancock::InsertionField
 
         REGEXP = Hancock::InsertionField::REGEXP.merge({
-          new_helper: /\[\[\[\[(?<new_helper>(?<new_helper_name>\w+?))\]\]\]\]/i,
-          old_helper: /\{\{(?<old_helper>HELPER\|(?<old_helper_name>\w+?))\}\}/i,
-          helper:     /(\[\[\[\[(?<helper>(?<helper_name>\w+?))\]\]\]\]|\{\{(?<helper>HELPER\|(?<helper_name>\w+?))\}\})/i,
           new_bs:     /\[\[(?<new_bs>(?<new_bs_name>\w+?))\]\]/i,
           old_bs:     /\{\{(?<old_bs>BS\|(?<old_bs_name>\w+?))\}\}/i,
           bs:         /(\[\[(?<bs>(?<bs_name>\w+?))\]\]|\{\{(?<bs>BS\|(?<bs_name>\w+?))\}\})/i,
@@ -220,6 +217,18 @@ module Hancock::Pages
                   data
                 end
 
+              end.gsub(REGEXP[:old_helper]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:new_helper]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:old_bs]) do |data|
+                clear_insertions ? "" : data
+
+              end.gsub(REGEXP[:new_bs]) do |data|
+                clear_insertions ? "" : data
+
               end.gsub(REGEXP[:settings]) do
                 if defined?(Settings)
                   name = $~[:setting_name]
@@ -240,18 +249,6 @@ module Hancock::Pages
                     ""
                   end
                 end
-
-              end.gsub(REGEXP[:old_helper]) do |data|
-                clear_insertions ? "" : data
-
-              end.gsub(REGEXP[:new_helper]) do |data|
-                clear_insertions ? "" : data
-
-              end.gsub(REGEXP[:old_bs]) do |data|
-                clear_insertions ? "" : data
-
-              end.gsub(REGEXP[:new_bs]) do |data|
-                clear_insertions ? "" : data
               end
 
               @content_html_used = true
@@ -369,12 +366,10 @@ module Hancock::Pages
               Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
               nil
             end
-          end.gsub(REGEXP[:bs]) do
-            bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
-            # view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
-            if bs
+          end.gsub(REGEXP[:helper]) do
+            if Hancock.can_render_helper? $~[:helper_name]
               begin
-                view.render_blockset(bs, called_from: {object: self, method: :render_or_content_html})
+                view.__send__($~[:helper_name])
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -386,10 +381,12 @@ module Hancock::Pages
                 nil
               end
             end
-          end.gsub(REGEXP[:helper]) do
-            if Hancock::Pages.helpers_whitelist_as_array.include?($~[:helper_name])
+          end.gsub(REGEXP[:bs]) do
+            bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
+            # view.render_blockset(bs, called_from: :render_or_content_html) rescue nil if bs
+            if bs
               begin
-                view.__send__($~[:helper_name])
+                view.render_blockset(bs, called_from: {object: self, method: :render_or_content_html})
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -486,12 +483,10 @@ module Hancock::Pages
               nil
             end
             # view.render(opts) rescue nil
-          end.gsub(REGEXP[:bs]) do
-            bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
-            # view.render_blockset(bs, called_from: :render_or_content) rescue nil if bs
-            if bs
+          end.gsub(REGEXP[:helper]) do
+            if Hancock.can_render_helper? $~[:helper_name]
               begin
-                view.render_blockset(bs, called_from: {object: self, method: :render_or_content})
+                view.__send__(helper_name)
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -503,10 +498,12 @@ module Hancock::Pages
                 nil
               end
             end
-          end.gsub(REGEXP[:helper]) do
-            if Hancock::Pages.helpers_whitelist_as_array.include?($~[:helper_name])
+          end.gsub(REGEXP[:bs]) do
+            bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
+            # view.render_blockset(bs, called_from: :render_or_content) rescue nil if bs
+            if bs
               begin
-                view.__send__(helper_name)
+                view.render_blockset(bs, called_from: {object: self, method: :render_or_content})
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message

@@ -70,7 +70,23 @@ module Hancock::Pages
               view.extend ActionView::Context
               # {{BS|%blockset_name%}}
               # excerpt.gsub(/\{\{(.*?)\}\}/) do
-              _excerpt = excerpt.gsub(REGEXP[:bs]) do
+              _excerpt = excerpt.gsub(REGEXP[:helper]) do
+                if Hancock.can_render_helper? $~[:helper_name]
+                  begin
+                    view.__send__($~[:helper_name])
+                  rescue Exception => exception
+                    if Hancock::Pages.config.verbose_render
+                      Rails.logger.error exception.message
+                      Rails.logger.error exception.backtrace.join("\n")
+                      puts exception.message
+                      puts exception.backtrace.join("\n")
+                    end
+                    Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                    nil
+                  end
+                end
+
+              end.gsub(REGEXP[:bs]) do
                 bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
                 if bs
                   begin
@@ -134,7 +150,23 @@ module Hancock::Pages
 
               # {{BS|%blockset_name%}}
               # content.gsub(/\{\{(.*?)\}\}/) do
-              _content = content.gsub(REGEXP[:bs]) do
+              _content = content.gsub(REGEXP[:helper]) do
+                if Hancock.can_render_helper? $~[:helper_name]
+                  begin
+                    view.__send__($~[:helper_name])
+                  rescue Exception => exception
+                    if Hancock::Pages.config.verbose_render
+                      Rails.logger.error exception.message
+                      Rails.logger.error exception.backtrace.join("\n")
+                      puts exception.message
+                      puts exception.backtrace.join("\n")
+                    end
+                    Raven.capture_exception(exception) if Hancock::Pages.config.raven_support
+                    nil
+                  end
+                end
+
+              end.gsub(REGEXP[:bs]) do
                 bs = Hancock::Pages::Blockset.enabled.where(name: $~[:bs_name]).first
                 if bs
                   begin

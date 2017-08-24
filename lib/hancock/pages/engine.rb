@@ -67,9 +67,6 @@ module Hancock::Pages
             Settings.ns('admin').hancock_pages_blocks_views_blacklist(default: '', kind: :text, label: 'Черный список блоков') unless Settings.ns('admin').exists?("hancock_pages_blocks_views_blacklist")
           end
 
-          Settings.ns('admin').helpers_whitelist(default: '', kind: :text, label: 'Белый список хелперов') unless Settings.ns('admin').exists?("helpers_whitelist")
-          Settings.ns('admin').helpers_human_names(default: '', kind: :yaml, label: 'Имена хелперов') unless Settings.ns('admin').exists?("helpers_human_names")
-
         end
       rescue
       end

@@ -3,7 +3,6 @@ require 'hancock/pages/engine'
 require 'hancock/pages/configuration'
 
 require "hancock/pages/views_whitelist"
-require "hancock/pages/helpers_whitelist"
 
 require "hancock/pages/routes"
 
@@ -16,7 +15,7 @@ module Hancock::Pages
   include Hancock::Plugin
 
   include Hancock::Pages::ViewsWhitelist
-  include Hancock::Pages::HelpersWhitelist
+  # include Hancock::Pages::HelpersWhitelist
 
   autoload :Admin, 'hancock/pages/admin'
   module Admin
