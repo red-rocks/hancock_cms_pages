@@ -4,17 +4,17 @@ module Hancock::Pages::ViewsWhitelist
 
     class << base
       def views_whitelist
-        (Settings.hancock_pages_blocks_views_whitelist || {})
+        (Settings.views_whitelist || {})
       end
       def views_whitelist_obj
-        Settings.getnc(:hancock_pages_blocks_views_whitelist)
+        Settings.getnc(:views_whitelist)
       end
       def views_whitelist_as_array(exclude_blacklist = false, include_standalones = true)
         if exclude_blacklist.is_a?(Hash)
           exclude_blacklist, include_standalones =
             exclude_blacklist[:exclude_blacklist], exclude_blacklist[:include_standalones]
         end
-        _list = views_whitelist.lines.map(&:strip).uniq
+        _list = views_whitelist.keys.map(&:to_s).map(&:strip)
         if include_standalones
           Hancock::Pages.config.standalone_paths.each do |spath|
             spath = spath.join("/") if spath.is_a?(Array)
@@ -44,20 +44,20 @@ module Hancock::Pages::ViewsWhitelist
       end
 
       def views_blacklist
-        (Settings.ns('admin').hancock_pages_blocks_views_blacklist || {})
+        (Settings.ns('admin').views_blacklist || [])
       end
       def views_blacklist_obj
-        Settings.ns('admin').getnc(:hancock_pages_blocks_views_blacklist)
+        Settings.ns('admin').getnc(:views_blacklist)
       end
       def views_blacklist_as_array
-        views_blacklist.lines.map(&:strip).uniq
+        views_blacklist
       end
 
       def views_whitelist_human_names
-        (Settings.hancock_pages_blocks_views_human_names || {})
+        views_whitelist
       end
       def views_whitelist_human_names_obj
-        Settings.getnc(:hancock_pages_blocks_views_human_names)
+        views_whitelist_obj
       end
 
       def format_virtual_path(virtual_path, is_partial = nil)
@@ -90,19 +90,13 @@ module Hancock::Pages::ViewsWhitelist
         end
         return nil if path.blank?
         path.strip!
+        name = path if name.nil?
         current_whitelist_array = views_whitelist_as_array
         ret = true
         unless current_whitelist_array.include?(path)
           ret = false
-          current_whitelist_array << path
-          views_whitelist_obj.update(raw: current_whitelist_array.join("\n"))
-        end
-        unless name.blank?
-          current_whitelist_human_names = views_whitelist_human_names
-          unless current_whitelist_human_names.keys.include?(path)
-            current_whitelist_human_names[path] = name
-            views_whitelist_human_names_obj.update(raw: current_whitelist_human_names.to_yaml)
-          end
+          new_whitelist = views_whitelist.merge({"#{name}": path})
+          views_whitelist_obj.update(raw_hash: new_whitelist)
         end
         return ret
       end
@@ -118,7 +112,7 @@ module Hancock::Pages::ViewsWhitelist
         if current_blacklist_array.include?(path)
           ret = false
           current_blacklist_array << path
-          views_blacklist_obj.update(raw: views_current_blacklist_array.join("\n"))
+          views_blacklist_obj.update(raw_array: views_current_blacklist_array)
         end
         return ret
       end
