@@ -53,7 +53,7 @@ module Hancock::Pages
       @verbose_render = Rails.env.development? or Rails.env.test?
       @raven_support = !!(Hancock.config.respond_to?(:raven_support) ? Hancock.config.raven_support : defined?(Raven))
 
-      @available_layouts = ["application"]
+      @available_layouts = [nil, "application"]
 
       @standalone_paths = [['hancock', 'standalone']]
 

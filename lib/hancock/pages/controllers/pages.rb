@@ -3,11 +3,6 @@ module Hancock::Pages
     module Pages
       extend ActiveSupport::Concern
 
-      included do
-        include ActionView::Helpers::TagHelper
-        include ActionView::Context
-      end
-
       def show
         if @seo_page.nil? || !@seo_page.persisted?
           if !params[:id].blank? or !params[:slug].blank?
@@ -24,8 +19,14 @@ module Hancock::Pages
           add_breadcrumb @seo_page.name, @seo_page.get_fullpath
         end
 
-        if Hancock::Pages.config.available_layouts.include?(@seo_page.layout_name)
-          render layout: @seo_page.layout_name
+        layout_name = nil
+        layout_name = @seo_page.layout_name unless @seo_page.layout_name.blank?
+        if layout_name
+          if Hancock::Pages.config.available_layouts.include?(layout_name)
+            render layout: layout_name
+          end
+        else
+          render html: @seo_page.page_content(self).html_safe, layout: nil
         end
       end
 

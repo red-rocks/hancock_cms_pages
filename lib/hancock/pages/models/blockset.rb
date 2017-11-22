@@ -15,15 +15,15 @@ module Hancock::Pages
           if view.is_a?(Hash)
             view, content = view[:view] || Hancock::Pages::PagesController.new, view[:content]
           end
-          Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
-            unless view.class < lib_extends
-              if view.respond_to?(:prepend)
-                view.prepend lib_extends
-              else
-                view.extend lib_extends
-              end
-            end
-          end
+          # Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
+          #   unless view.class < lib_extends
+          #     if view.respond_to?(:prepend)
+          #       view.prepend lib_extends
+          #     else
+          #       view.extend lib_extends
+          #     end
+          #   end
+          # end
 
           ret = content
           if use_wrapper

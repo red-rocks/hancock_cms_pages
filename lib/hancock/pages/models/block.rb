@@ -308,15 +308,15 @@ module Hancock::Pages
           view, opts = view.delete(:view) || Hancock::Pages::PagesController.new, view
         end
         opts = opts.clone
-        Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
-          unless view.class < lib_extends
-            if view.respond_to?(:prepend)
-              view.prepend lib_extends
-            else
-              view.extend lib_extends
-            end
-          end
-        end
+        # Hancock::Pages.config.renderer_lib_extends.each do |lib_extends|
+        #   unless view.class < lib_extends
+        #     if view.respond_to?(:prepend)
+        #       view.prepend lib_extends
+        #     else
+        #       view.extend lib_extends
+        #     end
+        #   end
+        # end
 
         ret = ""
         hancock_env = {block: self, called_from: [{object: self, method: :render_or_content_html}]}
@@ -369,7 +369,7 @@ module Hancock::Pages
           end.gsub(REGEXP[:helper]) do
             if Hancock.can_render_helper? $~[:helper_name]
               begin
-                view.__send__($~[:helper_name])
+                view.view_context.__send__($~[:helper_name])
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message
@@ -486,7 +486,7 @@ module Hancock::Pages
           end.gsub(REGEXP[:helper]) do
             if Hancock.can_render_helper? $~[:helper_name]
               begin
-                view.__send__(helper_name)
+                view.view_context.__send__(helper_name)
               rescue Exception => exception
                 if Hancock::Pages.config.verbose_render
                   Rails.logger.error exception.message

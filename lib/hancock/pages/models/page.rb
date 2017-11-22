@@ -66,14 +66,14 @@ module Hancock::Pages
               @excerpt_used = true
               ''
             else
-              view.extend ActionView::Helpers::TagHelper
-              view.extend ActionView::Context
+              # view.extend ActionView::Helpers::TagHelper
+              # view.extend ActionView::Context
               # {{BS|%blockset_name%}}
               # excerpt.gsub(/\{\{(.*?)\}\}/) do
               _excerpt = excerpt.gsub(REGEXP[:helper]) do
                 if Hancock.can_render_helper? $~[:helper_name]
                   begin
-                    view.__send__($~[:helper_name])
+                    view.view_context.__send__($~[:helper_name])
                   rescue Exception => exception
                     if Hancock::Pages.config.verbose_render
                       Rails.logger.error exception.message
@@ -145,15 +145,15 @@ module Hancock::Pages
               @content_used = true
               ''
             else
-              view.extend ActionView::Helpers::TagHelper
-              view.extend ActionView::Context
+              # view.extend ActionView::Helpers::TagHelper
+              # view.extend ActionView::Context
 
               # {{BS|%blockset_name%}}
               # content.gsub(/\{\{(.*?)\}\}/) do
               _content = content.gsub(REGEXP[:helper]) do
                 if Hancock.can_render_helper? $~[:helper_name]
                   begin
-                    view.__send__($~[:helper_name])
+                    view.view_context.__send__($~[:helper_name])
                   rescue Exception => exception
                     if Hancock::Pages.config.verbose_render
                       Rails.logger.error exception.message
