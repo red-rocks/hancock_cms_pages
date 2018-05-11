@@ -28,7 +28,7 @@ module Hancock::Pages
               queryable true
               searchable  do
                 [
-                  {blocks: :_id},
+                  {blocks: :id},
                   {blocks: :name},
                   {blocks: :menu_link_content},
                   {blocks: :pageblock_selector},
@@ -45,12 +45,14 @@ module Hancock::Pages
 
           Hancock::RailsAdminGroupPatch::hancock_cms_group(self, fields)
 
-          sort_embedded(
-            {
-              fields: [:blocks],
-              label_methods: [:name, :title, :label, :rails_admin_label]
-            }
-          )
+          if Hancock::Pages.mongoid?
+            sort_embedded(
+              {
+                fields: [:blocks],
+                label_methods: [:name, :title, :label, :rails_admin_label]
+              }
+            )
+          end
 
           if block_given?
             yield self

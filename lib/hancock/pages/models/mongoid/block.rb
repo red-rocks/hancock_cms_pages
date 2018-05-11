@@ -4,8 +4,6 @@ module Hancock::Pages
       module Block
         extend ActiveSupport::Concern
 
-        include Hancock::HtmlField
-
         included do
           field :name, type: String, default: "", overwrite: true
 
@@ -38,11 +36,30 @@ module Hancock::Pages
           field :wrapper_tag, type: String, default: ""
           field :wrapper_class, type: String, default: ""
           field :wrapper_id, type: String, default: ""
-          field :wrapper_attributes, type: Hash, default: {}
 
           field :menu_link_content, type: String
           field :show_in_menu, type: Boolean, default: true
-          scope :show_in_menu, -> { where(show_in_menu: true) }
+
+          field :wrapper_attributes, type: Hash, default: {}
+          def wrapper_attributes=(val)
+            if val.is_a? (String)
+              begin
+                begin
+                  self[:wrapper_attributes] = JSON.parse(val)
+                rescue
+                  self[:wrapper_attributes] = YAML.load(val)
+                end
+              rescue
+              end
+            elsif val.is_a?(Hash)
+              self[:wrapper_attributes] = val
+            else
+              self[:wrapper_attributes] = wrapper_attributes
+            end
+          end
+          def wrapper_attributes_str
+            self[:wrapper_attributes] ||= self.wrapper_attributes.to_json if self.wrapper_attributes
+          end
         end
 
       end

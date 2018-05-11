@@ -10,6 +10,7 @@ module Hancock::Pages
 
         Proc.new {
           navigation_label(!nav_label.blank? ? nav_label : I18n.t('hancock.pages'))
+          parent Hancock::Pages::Blockset
           object_label_method :rails_admin_label
 
           field :enabled, :toggle do

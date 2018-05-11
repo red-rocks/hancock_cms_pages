@@ -10,7 +10,7 @@ module Hancock::Pages
     def migrations
       if Hancock.active_record?
         %w(pages blocks).each do |table_name|
-          migration_template "migration_#{table_name}.rb", "db/migrate/hancock_create_#{table_name}.rb"
+          migration_template "migration_#{table_name}.rb", "db/migrate/hancock_pages_create_#{table_name}.rb"
         end
       end
     end

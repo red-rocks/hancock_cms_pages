@@ -24,6 +24,7 @@ module Hancock::Pages
             end
             field :hancock_connectable do
               searchable :name
+              visible false
             end
             field :fullpath do
               searchable true
@@ -58,6 +59,7 @@ module Hancock::Pages
             end
             field :hancock_connectable do
               read_only true
+              visible false
             end
 
             group :content, &Hancock::Admin.content_block(excerpt: false)

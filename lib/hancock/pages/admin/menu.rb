@@ -24,7 +24,7 @@ module Hancock::Pages
               _model = bindings[:object].page_class.rails_admin_model
               bindings[:view].link_to(
                 'Добавить Страницу',
-                bindings[:view].new_path(model_name: _model, "#{_model}[menu_ids][]": bindings[:object]._id.to_s),
+                bindings[:view].new_path(model_name: _model, "#{_model}[menu_ids][]": bindings[:object].id.to_s),
                 class: 'label label-info'
               )
             end

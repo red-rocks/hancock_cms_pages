@@ -5,6 +5,8 @@ module Hancock::Pages
       include Hancock::Model
       include Hancock::Enableable
       include ManualSlug
+      include Hancock::HtmlField
+
       if Hancock::Pages.config.seo_support
         include Hancock::Seo::Seoable
         include Hancock::Seo::SitemapDataField
@@ -34,6 +36,9 @@ module Hancock::Pages
       # end
 
       included do
+
+        scope :sorted, -> { order(lft: :asc) }
+
         acts_as_nested_set
 
         validates_uniqueness_of :fullpath
@@ -43,16 +48,11 @@ module Hancock::Pages
           self.fullpath = "/pages/#{slug}" if self.fullpath.blank?
         end
 
-
-        if Hancock.rails4?
-          belongs_to :hancock_connectable, polymorphic: true
-        else
-          belongs_to :hancock_connectable, polymorphic: true, optional: true
-        end
+        belongs_to :hancock_connectable, polymorphic: true, optional: true
 
         before_save do
-          self.hancock_connectable_id = nil   if self.hancock_connectable_id.nil?
-          self.hancock_connectable_type = nil if self.hancock_connectable_type.nil?
+          # self.hancock_connectable_id = nil   if self.hancock_connectable_id.nil?
+          # self.hancock_connectable_type = nil if self.hancock_connectable_type.nil?
           self
         end
 
@@ -60,6 +60,9 @@ module Hancock::Pages
           insertions_for(:excerpt_html)
           insertions_for(:content_html)
         end
+
+        # hancock_cms_hash_field :wrapper_attributes
+
         def page_excerpt(view = Hancock::Pages::PagesController.new)
           if @excerpt_used.nil?
             if excerpt.nil?
@@ -274,26 +277,6 @@ module Hancock::Pages
 
         def nav_options_additions
           {}
-        end
-
-        def wrapper_attributes=(val)
-          if val.is_a? (String)
-            begin
-              begin
-                self[:wrapper_attributes] = JSON.parse(val)
-              rescue
-                self[:wrapper_attributes] = YAML.load(val)
-              end
-            rescue
-            end
-          elsif val.is_a?(Hash)
-            self[:wrapper_attributes] = val
-          else
-            self[:wrapper_attributes] = wrapper_attributes
-          end
-        end
-        def wrapper_attributes_str
-          self[:wrapper_attributes] ||= self.wrapper_attributes.to_json if self.wrapper_attributes
         end
 
       end

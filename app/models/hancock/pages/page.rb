@@ -1,6 +1,7 @@
 module Hancock::Pages
   if Hancock::Pages.active_record?
-    class Page < ActiveRecord::Base
+    class Page < ApplicationRecord
+      self.table_name = "hancock_pages_pages".freeze
     end
   end
 

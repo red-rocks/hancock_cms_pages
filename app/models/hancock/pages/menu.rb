@@ -1,6 +1,7 @@
 module Hancock::Pages
   if Hancock::Pages.active_record?
-    class Menu < ActiveRecord::Base
+    class Menu < ApplicationRecord
+      self.table_name = "hancock_pages_menus".freeze
     end
   end
 

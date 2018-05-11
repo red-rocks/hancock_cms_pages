@@ -6,6 +6,8 @@ module Hancock::Pages
       include Hancock::Enableable
       include ManualSlug
 
+      include Hancock::HtmlField
+
       if Hancock::Pages.config.insertions_support
         include Hancock::InsertionField
 
@@ -20,6 +22,8 @@ module Hancock::Pages
       include Hancock::Pages.orm_specific('Block')
 
       included do
+        scope :show_in_menu, -> { where(show_in_menu: true) }
+
         manual_slug :name
 
         validates :file_path, format: {
@@ -43,6 +47,8 @@ module Hancock::Pages
           alias :block_content :page_content
           alias :block_content_html :page_content_html
         end
+
+        # hancock_cms_hash_field :wrapper_attributes
 
         def block_content(clear_insertions = true)
           if clear_insertions.is_a?(Hash)
@@ -560,26 +566,6 @@ module Hancock::Pages
 
       def nav_options_additions
         {}
-      end
-
-      def wrapper_attributes=(val)
-        if val.is_a? (String)
-          begin
-            begin
-              self[:wrapper_attributes] = JSON.parse(val)
-            rescue
-              self[:wrapper_attributes] = YAML.load(val)
-            end
-          rescue
-          end
-        elsif val.is_a?(Hash)
-          self[:wrapper_attributes] = val
-        else
-          self[:wrapper_attributes] = wrapper_attributes
-        end
-      end
-      def wrapper_attributes_str
-        self[:wrapper_attributes] ||= self.wrapper_attributes.to_json if self.wrapper_attributes
       end
 
     end
