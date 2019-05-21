@@ -2,7 +2,18 @@ module Hancock::Pages::SeoPages
   extend ActiveSupport::Concern
   included do
     before_action :find_page
+
+    helper_method :current_seo_page
   end
+
+  def current_seo_page
+    @current_seo_page ||= (@seo_page || @seo_parent_page)
+  end
+  
+  def seo_object
+    @seo_page
+  end
+
 
   private
   def find_page
@@ -75,7 +86,11 @@ module Hancock::Pages::SeoPages
 
   def page_title
     if @seo_page.nil?
-      Settings ? Settings.default_title : "" #temp
+      if Hancock::Pages.config.seo_support
+        Hancock::Seo::Seo.settings.default_title
+      else
+        Settings ? Settings.default_title : "" #temp
+      end
     else
       @seo_page.page_title
     end

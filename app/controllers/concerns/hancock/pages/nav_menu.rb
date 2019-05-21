@@ -74,6 +74,9 @@ module Hancock::Pages::NavMenu
   def nav_get_menu_items(type)
     if type.is_a?(blockset_class)
       type
+    elsif type.is_a?(menu_class)
+      menu = type
+      type = menu.name
     else
       menu = menu_class.find(type.to_s) rescue menu_class.create(name: type.to_s, text_slug: type.to_s)
     end
