@@ -23,6 +23,7 @@ ru:
       hancock/pages/blockset: Блоки
     attributes:
       hancock/pages/page:
+        subdomain: Поддомен
         fullpath: URL
         regexp: Подсветка меню
         redirect: Редирект

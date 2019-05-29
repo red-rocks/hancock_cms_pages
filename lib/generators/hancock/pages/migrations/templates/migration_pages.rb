@@ -57,6 +57,9 @@ class HancockPagesCreatePages < ActiveRecord::Migration[5.1]
       t.string :redirect
       t.string :fullpath, null: false
 
+      t.string :subdomain, null: false, default: ""
+
+
 
       t.boolean :use_wrapper, default: false, null: false
       t.string :wrapper_tag, default: ""

@@ -12,6 +12,13 @@ module Hancock::Pages
         field :menus, :hancock_multiselect do
           searchable :name, :text_slug
         end
+        field :subdomain, :string do
+          help I18n.t('hancock.with_final_slash')
+          searchable true
+          visible do
+            !!::Hancock::Pages.config.subdomains
+          end
+        end
         field :fullpath, :string do
           help I18n.t('hancock.with_final_slash')
           searchable true

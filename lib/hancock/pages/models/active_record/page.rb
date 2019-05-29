@@ -24,7 +24,7 @@ module Hancock::Pages
           hancock_cms_html_field :content
 
           has_paper_trail
-          validates_lengths_from_database only: [:name, :content_html, :excerpt_html, :regexp, :redirect, :fullpath]
+          validates_lengths_from_database only: [:name, :content_html, :excerpt_html, :regexp, :redirect, :fullpath, :subdomain]
 
           if Hancock::Pages.config.localize
             translates :name, :content_html, :excerpt_html

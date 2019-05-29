@@ -16,15 +16,21 @@ module Hancock::Pages::SeoPages
 
 
   private
+  def path_subdomains_transformer(path, subdomains = [])
+    return path, subdomains
+  end
+
   def find_page
     return if rails_admin?
-    @seo_page = find_seo_page request.path
+    @seo_page = find_seo_page request.path, request.subdomains
     if !@seo_page.nil? && !@seo_page.redirect.blank?
       redirect_to @seo_page.redirect, status: :moved_permanently
     end
   end
 
-  def find_seo_page(path)
+  def find_seo_page(path, subdomains = [])
+    path, subdomains = path_subdomains_transformer(path, subdomains)
+    subdomain = subdomains.join(".")
     do_redirect = false
     if path[0] != '/'
       path = '/' + path
@@ -33,10 +39,10 @@ module Hancock::Pages::SeoPages
       path = path[0..-2]
       do_redirect = true
     end
-    page = page_class.enabled.where(fullpath: path).first
+    page = page_class.enabled.all_of({fullpath: path}, {subdomain: subdomain}).first
 
     if page.nil? && !params[:slug].blank?
-      page = page_class.enabled.where(fullpath: "/" + params[:slug]).first
+      page = page_class.enabled.all_of({fullpath: "/" + params[:slug]}, {subdomain: subdomain}).first
     end
 
     if page.nil?
@@ -47,7 +53,7 @@ module Hancock::Pages::SeoPages
       do_redirect = true
       spath = path.chomp(File.extname(path))
       if spath and spath != path and (!params[:slug].blank? and spath != "/" + params[:slug])
-        page = page_class.enabled.where(fullpath: spath).first
+        page = page_class.enabled.all_of({fullpath: spath}, {subdomain: subdomain}).first
       end
     end
 
@@ -58,7 +64,9 @@ module Hancock::Pages::SeoPages
     page
   end
 
-  def find_seo_page_with_redirect(path)
+  def find_seo_page_with_redirect(path, subdomains = [])
+    path, subdomains = path_subdomains_transformer(path, subdomains)
+    subdomain = subdomains.join(".")
     do_redirect = false
     if path[0] != '/'
       path = '/' + path
@@ -68,12 +76,12 @@ module Hancock::Pages::SeoPages
       do_redirect = true
     end
 
-    page = page_class.enabled.any_of({fullpath: path}, {redirect: path}).first
+    page = page_class.enabled.all_of({"$or": [{fullpath: path}, {redirect: path}]}, {subdomain: subdomain}).first
     if page.nil?
       do_redirect = true
       spath = path.chomp(File.extname(path))
       if spath != path
-        page = page_class.enabled.any_of({fullpath: spath}, {redirect: spath}).first
+        page = page_class.enabled.all_of({"$or": [{fullpath: spath}, {redirect: spath}]}, {subdomain: subdomain}).first
       end
     end
     if !page.nil? && do_redirect

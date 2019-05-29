@@ -41,7 +41,8 @@ module Hancock::Pages
 
         acts_as_nested_set
 
-        validates_uniqueness_of :fullpath
+        # validates_uniqueness_of :fullpath
+        validates_uniqueness_of :fullpath, scope: :subdomain
         validates_presence_of :name
         manual_slug :name
         before_validation do
@@ -256,13 +257,13 @@ module Hancock::Pages
 
         def clean_regexp
           if regexp.blank?
-            /^#{regexp_prefix}#{Regexp.escape(fullpath)}$/
+            /^#{regexp_prefix}#{::Regexp.escape(fullpath)}$/
           else
             begin
               /#{regexp}/
             rescue
               # not a valid regexp - treat as literal search string
-              /#{Regexp.escape(regexp)}/
+              /#{::Regexp.escape(regexp)}/
             end
           end
         end

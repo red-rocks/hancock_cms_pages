@@ -8,7 +8,9 @@ module Hancock::Pages
           index({enabled: 1, lft: 1, menu_ids: 1}, {background: true})
           index({parent_id: 1}, {background: true})
           index({hancock_connectable_id: 1, hancock_connectable_type: 1}, {background: true})
-          index({enabled: 1, fullpath: 1}, {background: true})
+          # index({enabled: 1, fullpath: 1}, {background: true})
+          index({enabled: 1, fullpath: 1, subdomain: 1}, {background: true})
+
 
           scope :connected, -> {
             where(:hancock_connectable_id.ne => nil)
@@ -26,6 +28,9 @@ module Hancock::Pages
               where(:hancock_connectable_id => nil)
             end
           }
+          
+
+          field :subdomain, type: String, default: ""
 
           field :name, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :layout_name, type: String, default: "application"

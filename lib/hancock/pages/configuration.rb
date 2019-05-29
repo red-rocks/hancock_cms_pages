@@ -8,6 +8,8 @@ module Hancock::Pages
   class Configuration
     attr_accessor :menu_max_depth
 
+    attr_accessor :subdomains
+
     attr_accessor :seo_support
     attr_accessor :cache_support
     attr_accessor :insertions_support
@@ -31,6 +33,8 @@ module Hancock::Pages
 
     def initialize
       @menu_max_depth = 2
+
+      @subdomains = false
 
       @seo_support        = !!defined? Hancock::Seo
       @cache_support      = !!defined?(Hancock::Cache)
