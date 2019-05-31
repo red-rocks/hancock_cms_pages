@@ -9,6 +9,11 @@ module Hancock::Pages::Decorators
       # end
 
       ############# rails_admin ##############
+
+      def self.rails_admin_navigation_icon
+        'mdi mdi-menu'.freeze
+      end
+
       # def self.rails_admin_add_fields
       #   [] #super
       # end

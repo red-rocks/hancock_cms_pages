@@ -9,6 +9,7 @@ module Hancock::Pages::Decorators
       # end
 
       ############# rails_admin ##############
+      
       # def self.rails_admin_add_fields
       #   [] #super
       # end
