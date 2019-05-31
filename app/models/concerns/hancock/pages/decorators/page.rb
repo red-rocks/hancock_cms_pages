@@ -10,10 +10,6 @@ module Hancock::Pages::Decorators
 
       ############# rails_admin ##############
 
-      def self.rails_admin_navigation_icon
-        'mdi mdi-television'.freeze
-      end
-
       # def self.rails_admin_add_fields
       #   [] #super
       # end

@@ -8,6 +8,7 @@ module Hancock::Pages
           nav_label, fields = nil, nav_label
         end
         Proc.new {
+          navigation_icon('mdi mdi-menu')
           navigation_label(!nav_label.blank? ? nav_label : I18n.t('hancock.pages'))
 
           field :enabled, :toggle do
