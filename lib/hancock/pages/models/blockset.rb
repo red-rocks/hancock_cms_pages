@@ -33,7 +33,8 @@ module Hancock::Pages
               class: wrapper_class,
               id: wrapper_id
             }.merge(wrapper_attributes)
-            ret = view.content_tag wrapper_tag, ret, _attrs
+            # ret = view.content_tag wrapper_tag, ret, _attrs
+            ret = ActionController::Base.helpers.content_tag wrapper_tag, ret, _attrs
           end
           ret = yield ret if block_given?
           return ret
