@@ -31,6 +31,16 @@ module Hancock::Pages
           
 
           field :subdomain, type: String, default: ""
+          scope :get_for, ->(**opts) {
+            subdomain = opts[:subdomain]
+            path = opts[:path]
+            redirect = opts[:redirect]
+            if redirect
+              all_of({"$or": [{fullpath: path}, {redirect: redirect}]}, {subdomain: subdomain})
+            else
+              all_of({fullpath: path}, {subdomain: subdomain})
+            end
+          }
 
           field :name, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :layout_name, type: String, default: "application"

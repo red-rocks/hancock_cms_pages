@@ -39,10 +39,12 @@ module Hancock::Pages::SeoPages
       path = path[0..-2]
       do_redirect = true
     end
-    page = page_class.enabled.all_of({fullpath: path}, {subdomain: subdomain}).first
+    # page = page_class.enabled.all_of({fullpath: path}, {subdomain: subdomain}).first
+    page = page_class.enabled.get_for(path: path, subdomain: subdomain).first
 
     if page.nil? && !params[:slug].blank?
-      page = page_class.enabled.all_of({fullpath: "/" + params[:slug]}, {subdomain: subdomain}).first
+      # page = page_class.enabled.all_of({fullpath: "/" + params[:slug]}, {subdomain: subdomain}).first
+      page = page_class.enabled.get_for(path: "/" + params[:slug], subdomain: subdomain).first
     end
 
     if page.nil?
@@ -53,7 +55,8 @@ module Hancock::Pages::SeoPages
       do_redirect = true
       spath = path.chomp(File.extname(path))
       if spath and spath != path and (!params[:slug].blank? and spath != "/" + params[:slug])
-        page = page_class.enabled.all_of({fullpath: spath}, {subdomain: subdomain}).first
+        # page = page_class.enabled.all_of({fullpath: spath}, {subdomain: subdomain}).first
+        page = page_class.enabled.get_for(path: spath, subdomain: subdomain).first
       end
     end
 
@@ -76,12 +79,14 @@ module Hancock::Pages::SeoPages
       do_redirect = true
     end
 
-    page = page_class.enabled.all_of({"$or": [{fullpath: path}, {redirect: path}]}, {subdomain: subdomain}).first
+    # page = page_class.enabled.all_of({"$or": [{fullpath: path}, {redirect: path}]}, {subdomain: subdomain}).first
+    page = page_class.enabled.get_for(path: path, redirect: path, subdomain: subdomain).first
     if page.nil?
       do_redirect = true
       spath = path.chomp(File.extname(path))
       if spath != path
-        page = page_class.enabled.all_of({"$or": [{fullpath: spath}, {redirect: spath}]}, {subdomain: subdomain}).first
+        # page = page_class.enabled.all_of({"$or": [{fullpath: spath}, {redirect: spath}]}, {subdomain: subdomain}).first
+        page = page_class.enabled.get_for(path: spath, redirect: spath, subdomain: subdomain).first
       end
     end
     if !page.nil? && do_redirect
