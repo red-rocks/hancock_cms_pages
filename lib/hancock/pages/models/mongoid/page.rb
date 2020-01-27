@@ -32,7 +32,10 @@ module Hancock::Pages
           field :name, type: String, localize: Hancock::Pages.config.localize, default: ""
           field :layout_name, type: String, default: "application"
 
-          field :regexp, type: String, default: ""
+          field :url_regexp, type: String, default: ""
+          alias_method :regexp, :url_regexp
+          alias_method :regexp=, :url_regexp=
+
           field :redirect, type: String, default: ""
           hancock_cms_html_field :excerpt, type: String, localize: Hancock::Pages.config.localize, default: ""
           hancock_cms_html_field :content, type: String, localize: Hancock::Pages.config.localize, default: ""
