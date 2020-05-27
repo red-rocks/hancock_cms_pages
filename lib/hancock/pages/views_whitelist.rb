@@ -42,12 +42,15 @@ module Hancock::Pages::ViewsWhitelist
       def can_render_view_in_block?(path)
         views_whitelist_as_array(true).include?(path)
       end
+      def admin_ns
+        (Hancock::Pages.config.localize ? "admin.shared" : "admin")
+      end
 
       def views_blacklist
-        (Settings.ns('admin').hancock_pages_blocks_views_blacklist || {})
+        (Settings.ns(admin_ns).hancock_pages_blocks_views_blacklist || {})
       end
       def views_blacklist_obj
-        Settings.ns('admin').getnc(:hancock_pages_blocks_views_blacklist)
+        Settings.ns(admin_ns).getnc(:hancock_pages_blocks_views_blacklist)
       end
       def views_blacklist_as_array
         views_blacklist.lines.map(&:strip).uniq
